@@ -1,13 +1,15 @@
-import 'dart:convert'; // Để sử dụng json.decode()
-import 'dart:io';
 
+import 'dart:io';
+import 'package:book_app/screen/chapter_screen.dart';
+import 'package:book_app/screen/read_screen.dart';
+import 'package:book_app/state/state_manager.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'model/Book.dart';
+import '../model/Book.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +33,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Book App',
+      routes: {
+        '/chapters': (context)=>ChapterScreen(),
+        '/read': (context)=>ReadScreen()
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -40,24 +46,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends ConsumerWidget {  // Chuyển MyHomePage thành ConsumerWidget
   @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) { // Nhận ref từ ConsumerWidget
+    late DatabaseReference _bannerRef, _bookRef;
 
-class _MyHomePageState extends State<MyHomePage> {
-  late DatabaseReference _bannerRef, _bookRef;
-
-  @override
-  void initState() {
-    super.initState();
     final _database = FirebaseDatabase.instanceFor(app: Firebase.app());
     _bannerRef = _database.ref().child('Banners');
     _bookRef = _database.ref().child('Book');
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFF44A3E),
@@ -137,7 +134,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             crossAxisSpacing: 1.0,
                             children: books.map((book) {
                               return GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+
+                                  ref.read(booksSelected.notifier).state = book; // Sử dụng ref đúng cách
+                                  Navigator.pushNamed(context, "/chapters");
+
+                                },
                                 child: Card(
                                   elevation: 12,
                                   child: Stack(
@@ -154,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               children: [
                                                 Expanded(
                                                   child: Text(
-                                                    book.name?? "Unknown",
+                                                    book.name ?? "Unknown",
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontWeight: FontWeight.bold,
@@ -210,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
       List<Book> books = [];
 
       for (var bookData in booksList) {
-          books.add(Book.fromJson(Map<String, dynamic>.from(bookData)));
+        books.add(Book.fromJson(Map<String, dynamic>.from(bookData)));
       }
       return books;
     }
