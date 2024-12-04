@@ -35,17 +35,24 @@ class ChapterScreen extends ConsumerWidget {
             itemCount: book.chapters?.length,
             itemBuilder: (context, index) {
               return GestureDetector (
-                onTap: (){
+                onTap: () {
                   ref.read(chapterSelected.notifier).state = book.chapters![index];
                   Navigator.pushNamed(context, '/read');
                 },
-                child: Column (children: [
-                  ListTile(title: Text('${book.chapters ?[index].name}'),), Divider (thickness: 1)
-                ],),);
+                child: Column (
+                  children: [
+                    ListTile(
+                      title: Text('${book.chapters?[index].name}'),
+                    ),
+                    Divider(thickness: 1)
+                  ],
+                ),
+              );
             }),
       )
           : Center(
-        child: Text('Chưa có dữu liệu'), ),
+        child: Text('Chưa có dữ liệu'),
+      ),
     );
   }
 }
