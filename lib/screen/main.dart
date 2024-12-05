@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/Book.dart';
+import 'QRSannerPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,6 +60,17 @@ class MyHomePage extends ConsumerWidget {  // Chuyển MyHomePage thành Consume
       appBar: AppBar(
         backgroundColor: Color(0xFFF44A3E),
         title: Text('Book App', style: TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.qr_code_scanner, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => QRScannerPage()), // Chuyển đến màn hình quét QR
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<String>>(
         future: getBanners(_bannerRef),
