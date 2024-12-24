@@ -1,15 +1,15 @@
 import 'dart:io';
-import 'package:book_app/screen/chapter_screen.dart';
-import 'package:book_app/screen/read_screen.dart';
-import 'package:book_app/state/state_manager.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import '../screen/header.dart';
+import '../screen/footer.dart';
+import '../screen/chapter_screen.dart';
+import '../screen/read_screen.dart';
 import '../model/Book.dart';
-import 'QRSannerPage.dart';
+import '../state/state_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,30 +56,7 @@ class MyHomePage extends ConsumerWidget {
     _bookRef = _database.ref().child('Book');
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFFF44A3E),
-        title: Text('Book App', style: TextStyle(color: Colors.white)),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search, size: 32, color: Colors.white),
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: CustomSearch(),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.qr_code_scanner, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => QRScannerPage()), // Navigate to QR scanner screen
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: buildHeader(context),
       body: FutureBuilder<List<String>>(
         future: getBanners(_bannerRef),
         builder: (context, snapshot) {
@@ -201,6 +178,7 @@ class MyHomePage extends ConsumerWidget {
                     return Center(child: CircularProgressIndicator());
                   },
                 ),
+                buildFooter(),
               ],
             );
           }
@@ -209,7 +187,6 @@ class MyHomePage extends ConsumerWidget {
       ),
     );
   }
-
   Future<List<String>> getBanners(DatabaseReference bannerRef) async {
     final snapshot = await bannerRef.get();
     if (snapshot.exists) {
@@ -235,60 +212,5 @@ class MyHomePage extends ConsumerWidget {
       return books;
     }
     return [];
-  }
-}
-
-class CustomSearch extends SearchDelegate {
-  List<String> allData = [
-    'American', 'Italy', 'China', 'Germany', 'France', 'England', 'Vietnamese'
-  ];
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear, size: 27, color: Colors.black, weight: 1.0),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back, size: 27, color: Colors.black, weight: 1.0),
-      onPressed: () {
-        close(context, null);
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var item in allData) {
-      if (item.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(item);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          title: Text(
-            result,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    throw UnimplementedError();
   }
 }
