@@ -66,13 +66,15 @@ class MyHomePage extends ConsumerWidget {
               showSearch(
                 context: context,
                 delegate: CustomSearch(),
-                
+              );
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.qr_code_scanner, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => QRScannerPage()), // Chuyển đến màn hình quét QR
-
+                MaterialPageRoute(builder: (context) => QRScannerPage()), // Navigate to QR scanner screen
               );
             },
           ),
