@@ -17,6 +17,8 @@ dependencies:
   firebase_storage: ^12.3.6
   carousel_slider: ^5.0.0
   flutter_riverpod: ^2.6.1
+  mobile_scanner: ^6.0.2
+  pretty_qr_code: ^3.3.0
 
 dev_dependencies:
   flutter_test:

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/Book.dart';
+import 'QRSannerPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +66,13 @@ class MyHomePage extends ConsumerWidget {
               showSearch(
                 context: context,
                 delegate: CustomSearch(),
+                
+            icon: Icon(Icons.qr_code_scanner, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => QRScannerPage()), // Chuyển đến màn hình quét QR
+
               );
             },
           ),
