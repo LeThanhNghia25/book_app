@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:book_app/screen/user_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +11,7 @@ import '../screen/chapter_screen.dart';
 import '../screen/read_screen.dart';
 import '../model/Book.dart';
 import '../state/state_manager.dart';
-
+import 'base_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -34,14 +35,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Book App',
       routes: {
-        '/chapters': (context) => ChapterScreen(),
-        '/read': (context) => ReadScreen()
+        '/': (context) => BaseScreen(child: MyHomePage()),
+        '/chapters': (context) => BaseScreen(child: ChapterScreen()),
+        '/read': (context) => BaseScreen(child: ReadScreen()),
+        '/user': (context) => BaseScreen(child: UserScreen()),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MyHomePage(),
     );
   }
 }
@@ -178,7 +180,6 @@ class MyHomePage extends ConsumerWidget {
                     return Center(child: CircularProgressIndicator());
                   },
                 ),
-                buildFooter(),
               ],
             );
           }
