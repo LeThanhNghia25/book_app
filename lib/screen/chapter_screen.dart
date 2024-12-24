@@ -2,7 +2,7 @@ import 'package:book_app/state/state_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'base_screen.dart';
 class ChapterScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
