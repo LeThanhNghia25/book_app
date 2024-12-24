@@ -58,7 +58,7 @@ class MyHomePage extends ConsumerWidget {
     _bookRef = _database.ref().child('Book');
 
     return Scaffold(
-      appBar: buildHeader(context),
+      appBar: HeaderWithSearch(),
       body: FutureBuilder<List<String>>(
         future: getBanners(_bannerRef),
         builder: (context, snapshot) {
@@ -214,4 +214,5 @@ class MyHomePage extends ConsumerWidget {
     }
     return [];
   }
+
 }
