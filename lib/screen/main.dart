@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:book_app/screen/chapter_screen.dart';
 import 'package:book_app/screen/read_screen.dart';
@@ -34,8 +33,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Book App',
       routes: {
-        '/chapters': (context)=>ChapterScreen(),
-        '/read': (context)=>ReadScreen()
+        '/chapters': (context) => ChapterScreen(),
+        '/read': (context) => ReadScreen()
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -46,9 +45,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends ConsumerWidget {  // Chuyển MyHomePage thành ConsumerWidget
+class MyHomePage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) { // Nhận ref từ ConsumerWidget
+  Widget build(BuildContext context, WidgetRef ref) {
     late DatabaseReference _bannerRef, _bookRef;
 
     final _database = FirebaseDatabase.instanceFor(app: Firebase.app());
@@ -59,6 +58,17 @@ class MyHomePage extends ConsumerWidget {  // Chuyển MyHomePage thành Consume
       appBar: AppBar(
         backgroundColor: Color(0xFFF44A3E),
         title: Text('Book App', style: TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search, size: 32, color: Colors.white),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: CustomSearch(),
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<String>>(
         future: getBanners(_bannerRef),
@@ -135,10 +145,8 @@ class MyHomePage extends ConsumerWidget {  // Chuyển MyHomePage thành Consume
                             children: books.map((book) {
                               return GestureDetector(
                                 onTap: () {
-
-                                  ref.read(booksSelected.notifier).state = book; // Sử dụng ref đúng cách
+                                  ref.read(booksSelected.notifier).state = book;
                                   Navigator.pushNamed(context, "/chapters");
-
                                 },
                                 child: Card(
                                   elevation: 12,
@@ -217,5 +225,60 @@ class MyHomePage extends ConsumerWidget {  // Chuyển MyHomePage thành Consume
       return books;
     }
     return [];
+  }
+}
+
+class CustomSearch extends SearchDelegate {
+  List<String> allData = [
+    'American', 'Italy', 'China', 'Germany', 'France', 'England', 'Vietnamese'
+  ];
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear, size: 27, color: Colors.black, weight: 1.0),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back, size: 27, color: Colors.black, weight: 1.0),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> matchQuery = [];
+    for (var item in allData) {
+      if (item.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(item);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return ListTile(
+          title: Text(
+            result,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    throw UnimplementedError();
   }
 }
