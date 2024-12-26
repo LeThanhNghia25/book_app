@@ -31,7 +31,7 @@ class ReadScreen extends ConsumerWidget {
         ),
       ),
       body: Center(
-        child: (chapter?.links == null || chapter!.links!.isEmpty)
+        child: (chapter.links == null || chapter.links!.isEmpty)
             ? const Text('This chapter is translating...')
             : CarouselSlider(
           items: chapter.links
