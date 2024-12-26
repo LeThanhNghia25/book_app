@@ -1,8 +1,8 @@
 
-import 'package:book_app/model/Chapters.dart';
+import 'package:book_app/models/chapter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../model/Book.dart';
+import '../models/book.dart';
 
 final booksSelected = StateProvider<Book>((ref) {
   return Book(name: "Unknown", chapters: []);

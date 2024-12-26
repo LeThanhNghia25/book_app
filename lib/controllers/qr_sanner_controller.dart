@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:book_app/state/state_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../model/Book.dart';
+import '../models/book.dart';
 
 class QRScannerPage extends ConsumerStatefulWidget {
   @override
