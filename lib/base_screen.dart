@@ -4,6 +4,7 @@ import 'screens/chapter_screen.dart';
 import 'screens/read_screen.dart';
 import 'screens/user_screen.dart';
 import 'widgets/footer.dart';
+import 'widgets/header.dart';
 
 class BaseScreen extends StatefulWidget {
   final int selectedIndex;
@@ -18,10 +19,10 @@ class _BaseScreenState extends State<BaseScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    HomeScreen(),
-    ChapterScreen(),
-    ReadScreen(),
-    UserScreen(),
+    const HomeScreen(),
+    const ChapterScreen(),
+    const ReadScreen(),
+    const UserScreen(),
   ];
 
   @override
@@ -39,6 +40,7 @@ class _BaseScreenState extends State<BaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const HeaderWithSearch(),  // Thêm header vào đây
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,

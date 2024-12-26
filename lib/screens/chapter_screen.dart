@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChapterScreen extends ConsumerWidget {
+  const ChapterScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Sử dụng watch để theo dõi provider
@@ -10,9 +12,9 @@ class ChapterScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFF44A3E),
+        backgroundColor: const Color(0xFFF44A3E),
         leading: IconButton( // Tùy chỉnh mũi tên quay lại
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back, // Mũi tên quay lại
             color: Colors.white, // Đặt màu trắng cho mũi tên
           ),
@@ -22,12 +24,12 @@ class ChapterScreen extends ConsumerWidget {
         ),
         title: Center(
           child: Text(
-            '${book.name?.toUpperCase() ?? "Unknown"}',  // Kiểm tra null cho `name`
-            style: TextStyle(color: Colors.white),
+            book.name?.toUpperCase() ?? "Unknown",  // Kiểm tra null cho `name`
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       ),
-      body: book.chapters != null && book.chapters!.length > 0
+      body: book.chapters != null && book.chapters!.isNotEmpty
           ? Padding(
         padding: const EdgeInsets.all(8),
         child: ListView.builder(
@@ -43,13 +45,13 @@ class ChapterScreen extends ConsumerWidget {
                     ListTile(
                       title: Text('${book.chapters?[index].name}'),
                     ),
-                    Divider(thickness: 1)
+                    const Divider(thickness: 1)
                   ],
                 ),
               );
             }),
       )
-          : Center(
+          : const Center(
         child: Text('Chưa có dữ liệu'),
       ),
     );

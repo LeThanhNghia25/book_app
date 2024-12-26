@@ -32,7 +32,7 @@ class Footer extends StatelessWidget {
           label: 'Tôi',
         ),
       ],
-      selectedItemColor: Colors.deepPurple,   // Màu icon được chọn
+      selectedItemColor: Colors.red,   // Màu icon được chọn
       unselectedItemColor: Colors.grey,       // Màu icon không được chọn
       backgroundColor: Colors.white,          // Nền của thanh điều hướng
       type: BottomNavigationBarType.fixed,    // Giữ cố định icon, không co giãn
