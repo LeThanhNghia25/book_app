@@ -1,11 +1,7 @@
 import 'dart:io';
-import 'package:book_app/screens/user_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'screens/home_screen.dart';
-import 'screens/chapter_screen.dart';
-import 'screens/read_screen.dart';
 import 'base_screen.dart';
 
 void main() async {
@@ -22,24 +18,17 @@ void main() async {
       databaseURL: 'https://bookapp-c5dce-default-rtdb.firebaseio.com/',
     ),
   );
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Book App',
-      routes: {
-        '/': (context) => BaseScreen(child: HomeScreen(), selectedIndex: 0), // Use HomeScreen here
-        '/chapters': (context) => BaseScreen(child: ChapterScreen(), selectedIndex: 2),
-        '/read': (context) => BaseScreen(child: ReadScreen(), selectedIndex: 1),
-        '/user': (context) => BaseScreen(child: UserScreen(), selectedIndex: 3), // Adjusted selectedIndex for user screen
-      },
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      home: BaseScreen(),  // BaseScreen làm màn hình chính
     );
   }
 }
