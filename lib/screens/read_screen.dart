@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ReadScreen extends ConsumerWidget {
+  const ReadScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Sử dụng watch để theo dõi provider
@@ -25,7 +27,7 @@ class ReadScreen extends ConsumerWidget {
         ),
         title: Center(
           child: Text(
-            '${book.name?.toUpperCase() ?? "Unknown"}', // Kiểm tra null cho `name`
+            book.name?.toUpperCase() ?? "Unknown", // Kiểm tra null cho `name`
             style: const TextStyle(color: Colors.white),
           ),
         ),

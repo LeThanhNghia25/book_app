@@ -1,7 +1,6 @@
 import 'package:book_app/controllers/banner_controller.dart';
 import 'package:book_app/controllers/book_controller.dart';
 import 'package:book_app/models/book.dart';
-import 'package:book_app/widgets/header.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -11,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/state_manager.dart';
 
 class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final database = FirebaseDatabase.instanceFor(app: Firebase.app());
@@ -18,7 +19,6 @@ class HomeScreen extends ConsumerWidget {
     final bookController = BookController(database);
 
     return Scaffold(
-      appBar: HeaderWithSearch(),
       body: Column(
         children: [
           // Banner Section
@@ -26,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
             future: bannerController.fetchBanners(), // Assuming this returns a Future<List<String>>
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -46,7 +46,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 );
               } else {
-                return Center(child: Text('No banners available.'));
+                return const Center(child: Text('No banners available.'));
               }
             },
           ),
@@ -56,7 +56,7 @@ class HomeScreen extends ConsumerWidget {
             future: bookController.fetchBooks(), // Assuming this returns a Future<List<Book>>
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -83,14 +83,14 @@ class HomeScreen extends ConsumerWidget {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Container(
-                                    color: Color(0xAA434343),
+                                    color: const Color(0xAA434343),
                                     padding: const EdgeInsets.all(8),
                                     child: Row(
                                       children: [
                                         Expanded(
                                           child: Text(
                                             book.name ?? "Unknown",
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -110,7 +110,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 );
               } else {
-                return Center(child: Text('No books available.'));
+                return const Center(child: Text('No books available.'));
               }
             },
           ),
