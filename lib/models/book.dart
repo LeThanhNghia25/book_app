@@ -1,4 +1,4 @@
-import 'Chapters.dart';
+import 'chapter.dart';
 
 class Book {
   String? category, name, image;

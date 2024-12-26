@@ -1,6 +1,5 @@
 import 'package:book_app/state/state_manager.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,7 +31,7 @@ class ReadScreen extends ConsumerWidget {
         ),
       ),
       body: Center(
-        child: (chapter?.links == null || chapter!.links!.isEmpty)
+        child: (chapter.links == null || chapter.links!.isEmpty)
             ? const Text('This chapter is translating...')
             : CarouselSlider(
           items: chapter.links

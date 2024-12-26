@@ -2,10 +2,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Thêm import cho Riverpod
 import 'package:book_app/state/state_manager.dart'; // Thêm import của state_manager
-import 'package:book_app/screen/QRSannerPage.dart';
-import 'package:book_app/screen/chapter_screen.dart';
+import 'package:book_app/controllers/qr_sanner_controller.dart';
+import 'package:book_app/screens/chapter_screen.dart';
 
-import '../model/Book.dart'; // Thêm import cho ChapterScreen
+import '../models/book.dart'; // Thêm import cho ChapterScreen
 
 
 // Chuyển Header thành ConsumerWidget
