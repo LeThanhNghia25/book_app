@@ -23,7 +23,7 @@ class HomeScreen extends ConsumerWidget {
         children: [
           // Banner Section
           FutureBuilder<List<String>>(
-            future: bannerController.fetchBanners(), // Assuming this returns a Future<List<String>>
+            future: bannerController.fetchBanners(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -52,22 +52,27 @@ class HomeScreen extends ConsumerWidget {
           ),
 
           // Books Section
-          FutureBuilder<List<Book>>(
-            future: bookController.fetchBooks(), // Assuming this returns a Future<List<Book>>
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                return Expanded(
-                  child: GridView.count(
+          Expanded(
+            child: FutureBuilder<List<Book>>(
+              future: bookController.fetchBooks(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  // Lọc sách bị null
+                  final books = snapshot.data!
+                      .where((book) => book.name != null)
+                      .toList();
+
+                  return GridView.count(
                     crossAxisCount: 2,
                     childAspectRatio: 0.8,
                     padding: const EdgeInsets.all(4.0),
                     mainAxisSpacing: 1.0,
                     crossAxisSpacing: 1.0,
-                    children: snapshot.data!.map((book) {
+                    children: books.map((book) {
                       return GestureDetector(
                         onTap: () {
                           ref.read(booksSelected.notifier).state = book;
@@ -107,12 +112,12 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       );
                     }).toList(),
-                  ),
-                );
-              } else {
-                return const Center(child: Text('No books available.'));
-              }
-            },
+                  );
+                } else {
+                  return const Center(child: Text('No books available.'));
+                }
+              },
+            ),
           ),
         ],
       ),

@@ -54,19 +54,18 @@ class _QRScannerPageState extends ConsumerState<QRScannerPage> {
   }
 
   // Hàm tìm quyển sách theo tên từ cơ sở dữ liệu
-  void _navigateToChapterPage(String bookName) async {
-    final snapshot = await _bookRef.get();
+  void _navigateToChapterPage(String bookId) async {
+    final snapshot = await _bookRef.child(bookId).get();
 
     if (snapshot.exists) {
-      var booksList = snapshot.value as List;
-      for (var bookData in booksList) {
-        if (bookData['Name'] == bookName) {
-          // Lưu quyển sách vào provider và điều hướng đến ChapterScreen
-          ref.read(booksSelected.notifier).state = Book.fromJson(Map<String, dynamic>.from(bookData));
-          Navigator.pushNamed(context, '/chapters');
-          break;
-        }
-      }
+      var bookData = Map<String, dynamic>.from(snapshot.value as Map);
+      ref.read(booksSelected.notifier).state = Book.fromJson(Map<String, dynamic>.from(bookData));
+      Navigator.pushNamed(context, '/chapters');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Book not found!")),
+      );
     }
   }
+
 }

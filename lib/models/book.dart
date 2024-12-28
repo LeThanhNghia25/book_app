@@ -1,41 +1,33 @@
 import 'chapter.dart';
 
 class Book {
-  String? category, name, image;
-  List<Chapters>? chapters;
+  String? id, category, name, image;
+  List<Chapter>? chapters;
 
-  Book({this.category, this.name, this.image, this.chapters});
+  Book({this.id, this.category, this.name, this.image, this.chapters});
 
+  // Sửa lại fromJson để nhận 1 tham số duy nhất
   Book.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     category = json['Category'];
     name = json['Name'];
     image = json['Image'];
 
-    // Handling the nested Chapters, kiểm tra kiểu của Chapters
     if (json['Chapters'] != null) {
-      chapters = [];
-      if (json['Chapters'] is List) {
-        // Nếu là List thì xử lý như sau
-        chapters = (json['Chapters'] as List)
-            .map((e) => Chapters.fromJson(Map<String, dynamic>.from(e)))
-            .toList();
-      } else if (json['Chapters'] is Map) {
-        // Nếu là Map thì xử lý theo cách cũ
-        json['Chapters'].forEach((key, value) {
-          chapters!.add(Chapters.fromJson(Map<String, dynamic>.from(value)));
-        });
-      }
+      chapters = (json['Chapters'] as List)
+          .map((e) => Chapter.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
     }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['Category'] = this.category;
-    data['Name'] = this.name;
-    data['Image'] = this.image;
-
-    if (this.chapters != null) {
-      data['Chapters'] = this.chapters!.map((v) => v.toJson()).toList();
+    data['id'] = id;
+    data['Category'] = category;
+    data['Name'] = name;
+    data['Image'] = image;
+    if (chapters != null) {
+      data['Chapters'] = chapters!.map((v) => v.toJson()).toList();
     }
     return data;
   }
