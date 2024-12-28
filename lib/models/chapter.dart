@@ -1,20 +1,18 @@
-class Chapters {
+class Chapter {
   List<String>? links;
   String? name;
 
-  Chapters({this.links, this.name});
+  Chapter({this.links, this.name});
 
-  Chapters.fromJson(Map<String, dynamic> json) {
-    if (json['Links'] != null) links = json['Links'].cast<String>();
+  Chapter.fromJson(Map<String, dynamic> json) {
+    links = (json['Links'] != null) ? json['Links'].cast<String>() : [];
     name = json['Name'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Links'] = this.links;
-    data['Name'] = this.name;
+    final Map<String, dynamic> data = {};
+    data['Links'] = links;
+    data['Name'] = name;
     return data;
   }
 }
-
-

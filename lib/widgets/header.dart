@@ -1,12 +1,11 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Thêm import cho Riverpod
-import 'package:book_app/state/state_manager.dart'; // Thêm import của state_manager
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:book_app/state/state_manager.dart';
 import 'package:book_app/controllers/qr_sanner_controller.dart';
 import 'package:book_app/screens/chapter_screen.dart';
-import '../models/book.dart'; // Thêm import cho ChapterScreen
+import '../models/book.dart';
 
-// Chuyển Header thành ConsumerWidget
 class HeaderWithSearch extends ConsumerWidget implements PreferredSizeWidget {
   const HeaderWithSearch({super.key});
 
@@ -21,8 +20,8 @@ class HeaderWithSearch extends ConsumerWidget implements PreferredSizeWidget {
         'Book App',
         style: TextStyle(
           color: Colors.white,
-          fontSize: 24, // Kích thước phông chữ lớn hơn
-          fontWeight: FontWeight.bold, // Chữ đậm
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
         ),
       ),
       actions: [
@@ -31,7 +30,7 @@ class HeaderWithSearch extends ConsumerWidget implements PreferredSizeWidget {
           onPressed: () {
             showSearch(
               context: context,
-              delegate: CustomSearch(ref: ref), // Truyền ref vào đây
+              delegate: CustomSearch(ref: ref),
             );
           },
         ),
@@ -49,29 +48,32 @@ class HeaderWithSearch extends ConsumerWidget implements PreferredSizeWidget {
   }
 }
 
-// Lấy danh sách tên sách từ Firebase
+// Lấy danh sách tên sách từ Firebase (theo dạng Map)
 Future<List<String>> fetchBookNamesFromFirebase() async {
-  DatabaseReference bookRef = FirebaseDatabase.instance.ref('Book');
+  DatabaseReference bookRef = FirebaseDatabase.instance.ref('Books');
   DataSnapshot snapshot = await bookRef.get();
 
-  if (snapshot.exists && snapshot.value is List) {
-    final books = snapshot.value as List;
-    return books.whereType<Map>().map((book) => book['Name'] as String).toList();
+  if (snapshot.exists && snapshot.value is Map) {
+    final booksMap = snapshot.value as Map<dynamic, dynamic>;
+    return booksMap.entries
+        .map((entry) => entry.value['Name'] as String)
+        .toList();
   }
   return [];
 }
 
-// Fetch thông tin chi tiết của cuốn sách từ Firebase
+// Fetch thông tin chi tiết của cuốn sách theo tên
 Future<Book> fetchBookDetailsFromFirebase(String bookName) async {
-  DatabaseReference bookRef = FirebaseDatabase.instance.ref('Book');
+  DatabaseReference bookRef = FirebaseDatabase.instance.ref('Books');
   DataSnapshot snapshot = await bookRef.get();
 
-  if (snapshot.exists && snapshot.value is List) {
-    var booksList = snapshot.value as List;
-    for (var bookData in booksList) {
-      var book = Book.fromJson(Map<String, dynamic>.from(bookData));
+  if (snapshot.exists && snapshot.value is Map) {
+    final booksMap = snapshot.value as Map<dynamic, dynamic>;
+
+    for (var entry in booksMap.entries) {
+      var book = Book.fromJson(Map<String, dynamic>.from(entry.value));
       if (book.name == bookName) {
-        return book; // Trả về đối tượng Book đầy đủ
+        return book; // Trả về Book khi tìm thấy
       }
     }
   }
@@ -79,11 +81,11 @@ Future<Book> fetchBookDetailsFromFirebase(String bookName) async {
 }
 
 class CustomSearch extends SearchDelegate {
-  final WidgetRef ref; // Thêm WidgetRef vào constructor
+  final WidgetRef ref;
   late Future<List<String>> booksFuture;
 
   CustomSearch({required this.ref}) {
-    booksFuture = fetchBookNamesFromFirebase(); // Tải tên sách từ Firebase
+    booksFuture = fetchBookNamesFromFirebase();
   }
 
   @override
@@ -132,18 +134,21 @@ class CustomSearch extends SearchDelegate {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 onTap: () async {
-                  Book bookDetails = await fetchBookDetailsFromFirebase(bookName);
+                  try {
+                    Book bookDetails = await fetchBookDetailsFromFirebase(bookName);
+                    ref.read(booksSelected.notifier).state = bookDetails;
 
-                  // Cập nhật thông tin sách vào provider
-                  ref.read(booksSelected.notifier).state = bookDetails;
-
-                  // Điều hướng đến ChapterScreen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChapterScreen(),
-                    ),
-                  );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChapterScreen(),
+                      ),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Không tìm thấy sách!')),
+                    );
+                  }
                 },
               );
             },

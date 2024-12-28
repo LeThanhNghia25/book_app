@@ -8,8 +8,8 @@ final booksSelected = StateProvider<Book>((ref) {
   return Book(name: "Unknown", chapters: []);
 });
 
-final chapterSelected = StateProvider<Chapters>((ref) {
-  return Chapters(name: "Unknown");
+final chapterSelected = StateProvider<Chapter>((ref) {
+  return Chapter(name: "Unknown");
 });
 
 
