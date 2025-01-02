@@ -1,5 +1,3 @@
-
-import 'package:book_app/models/chapter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/book.dart';
