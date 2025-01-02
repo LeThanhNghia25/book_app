@@ -51,6 +51,21 @@ class HomeScreen extends ConsumerWidget {
             },
           ),
 
+          // Books Section Header
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Books",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
           // Books Section
           Expanded(
             child: FutureBuilder<List<Book>>(
@@ -66,52 +81,53 @@ class HomeScreen extends ConsumerWidget {
                       .where((book) => book.name != null)
                       .toList();
 
-                  return GridView.count(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.8,
-                    padding: const EdgeInsets.all(4.0),
-                    mainAxisSpacing: 1.0,
-                    crossAxisSpacing: 1.0,
-                    children: books.map((book) {
+                  return GridView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0), // Tạo khoảng cách 2 bên
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3, // Hiển thị 3 quyển sách trên mỗi hàng
+                      childAspectRatio: 0.75, // Điều chỉnh tỉ lệ sách
+                      mainAxisSpacing: 8.0,  // Khoảng cách giữa các sách theo chiều dọc
+                      crossAxisSpacing: 8.0, // Khoảng cách giữa các sách theo chiều ngang
+                    ),
+                    itemCount: books.length,
+                    itemBuilder: (context, index) {
+                      final book = books[index];
                       return GestureDetector(
                         onTap: () {
                           ref.read(booksSelected.notifier).state = book;
                           Navigator.pushNamed(context, "/chapters");
                         },
                         child: Card(
-                          elevation: 12,
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
                               Image.network(book.image!, fit: BoxFit.cover),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Container(
-                                    color: const Color(0xAA434343),
-                                    padding: const EdgeInsets.all(8),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            book.name ?? "Unknown",
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: Container(
+                                  color: const Color(0xAA434343),
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    book.name ?? "Unknown",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  )
-                                ],
-                              )
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       );
-                    }).toList(),
+                    },
                   );
                 } else {
                   return const Center(child: Text('No books available.'));
