@@ -11,9 +11,7 @@
         {
           "Links": [
             "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg",
-            "http://4.bp.blogspot.com/-FTBemg84MOc/Vp2-JO6Cm3I/AAAAAAAAAAM/370fuoFgGYM/s1600/Doraemon%252Bv01%252Bc01%252B%252B02.jpg",
-            "http://1.bp.blogspot.com/-3-CZvfWT2uM/Vp2-JqYQAcI/AAAAAAAAAAY/JequG8dRuFU/s1600/Doraemon%252Bv01%252Bc01%252B%252B04.jpg",
-            "http://4.bp.blogspot.com/-vsvYJKCZL6M/Vp2-J3GXnKI/AAAAAAAAAAg/pV3vM4NdDLw/s1600/Doraemon%252Bv01%252Bc01%252B%252B05.jpg"
+            "http://4.bp.blogspot.com/-FTBemg84MOc/Vp2-JO6Cm3I/AAAAAAAAAAM/370fuoFgGYM/s1600/Doraemon%252Bv01%252Bc01%252B%252B02.jpg"
           ],
           "Name": "Vol.1 Chapter 1 : All The Way From A Future World"
         },
@@ -26,6 +24,66 @@
       ],
       "Image": "https://file.nhasachmienphi.com/jpg/nhasachmienphi-truyen-tranh-doremon-333102-0.jpg",
       "Name": "Doraemon"
+    },
+
+    "book2": {
+      "Category": "Horror",
+      "Chapters": [
+        {
+          "Links": [
+            "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg"
+          ],
+          "Name": "Chương 1: Đội vớt xác năm sông"
+        },
+        {
+          "Links": [
+            "http://4.bp.blogspot.com/-06SK8POTw_A/Vp3JaIJ0SaI/AAAAAAAAACs/1ZH49AyiJY8/s1600/Doraemon%252Bv01%252Bc02%252B01.jpg"
+          ],
+          "Name": "Chương 2: Thuỷ quái dưới cầu"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "Name": "Hà Thần"
+    },
+
+    "book3": {
+      "Category": "Comedy",
+      "Chapters": [
+        {
+          "Links": [
+            "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg"
+          ],
+          "Name": "Chương 1: Bà Chúa mắc lỡm"
+        },
+        {
+          "Links": [
+            "http://4.bp.blogspot.com/-06SK8POTw_A/Vp3JaIJ0SaI/AAAAAAAAACs/1ZH49AyiJY8/s1600/Doraemon%252Bv01%252Bc02%252B01.jpg"
+          ],
+          "Name": "Chương 2: Ăn trộm mèo"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-trang-quynh.jpg",
+      "Name": "Trạng Quỳnh"
+    },
+
+    "book4": {
+      "Category": "Detective, Criminal",
+      "Chapters": [
+        {
+          "Links": [
+            "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg"
+          ],
+          "Name": "Chương 1: Trang ký ức cũ"
+        },
+        {
+          "Links": [
+            "http://4.bp.blogspot.com/-06SK8POTw_A/Vp3JaIJ0SaI/AAAAAAAAACs/1ZH49AyiJY8/s1600/Doraemon%252Bv01%252Bc02%252B01.jpg"
+          ],
+          "Name": "Chương 2: Sự mất tích bí ẩn của bác tôi"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-luat-ngam.jpg",
+      "Name": "Luật Ngầm"
     }
   },
   "Users": {

@@ -6,7 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import '../services/open_library_api.dart';
 import '../state/state_manager.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -17,80 +17,73 @@ class HomeScreen extends ConsumerWidget {
     final database = FirebaseDatabase.instanceFor(app: Firebase.app());
     final bannerController = BannerController(database);
     final bookController = BookController(database);
+    final openLibraryAPI = OpenLibraryAPI();
 
     return Scaffold(
-      body: Column(
-        children: [
+      body: CustomScrollView(
+        slivers: [
           // Banner Section
-          FutureBuilder<List<String>>(
-            future: bannerController.fetchBanners(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                return CarouselSlider(
-                  items: snapshot.data!
-                      .map((url) => Builder(
-                    builder: (context) =>
-                        Image.network(url, fit: BoxFit.cover),
-                  ))
-                      .toList(),
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    enlargeCenterPage: true,
-                    viewportFraction: 1,
-                    initialPage: 0,
-                    height: MediaQuery.of(context).size.height / 3,
-                  ),
-                );
-              } else {
-                return const Center(child: Text('No banners available.'));
-              }
-            },
+          SliverToBoxAdapter(
+            child: FutureBuilder<List<String>>(
+              future: bannerController.fetchBanners(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError ||
+                    !snapshot.hasData ||
+                    snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No banners available.'));
+                } else {
+                  return CarouselSlider(
+                    items: snapshot.data!
+                        .map((url) => Builder(
+                              builder: (context) =>
+                                  Image.network(url, fit: BoxFit.cover),
+                            ))
+                        .toList(),
+                    options: CarouselOptions(
+                      autoPlay: true,
+                      enlargeCenterPage: true,
+                      viewportFraction: 1,
+                      initialPage: 0,
+                      height: MediaQuery.of(context).size.height / 3,
+                    ),
+                  );
+                }
+              },
+            ),
           ),
 
-          // Books Section Header
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Align(
+          // Section Title - Books
+          SliverToBoxAdapter(
+            child: Container(
+              padding: const EdgeInsets.only(top: 16, left: 8),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 "Books",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
           ),
 
-          // Books Section
-          Expanded(
-            child: FutureBuilder<List<Book>>(
-              future: bookController.fetchBooks(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  // Lọc sách bị null
-                  final books = snapshot.data!
-                      .where((book) => book.name != null)
-                      .toList();
+          // Books Section (3 cột, 3 hàng)
+          FutureBuilder<List<Book>>(
+            future: bookController.fetchBooks(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              } else if (snapshot.hasError) {
+                return SliverToBoxAdapter(
+                  child: Center(child: Text('Error: ${snapshot.error}')),
+                );
+              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                final books = snapshot.data!.take(9).toList();
 
-                  return GridView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0), // Tạo khoảng cách 2 bên
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3, // Hiển thị 3 quyển sách trên mỗi hàng
-                      childAspectRatio: 0.75, // Điều chỉnh tỉ lệ sách
-                      mainAxisSpacing: 8.0,  // Khoảng cách giữa các sách theo chiều dọc
-                      crossAxisSpacing: 8.0, // Khoảng cách giữa các sách theo chiều ngang
-                    ),
-                    itemCount: books.length,
-                    itemBuilder: (context, index) {
+                return SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
                       final book = books[index];
                       return GestureDetector(
                         onTap: () {
@@ -99,28 +92,19 @@ class HomeScreen extends ConsumerWidget {
                         },
                         child: Card(
                           elevation: 8,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Stack(
-                            fit: StackFit.expand,
+                          child: Column(
                             children: [
-                              Image.network(book.image!, fit: BoxFit.cover),
-                              Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: Container(
-                                  color: const Color(0xAA434343),
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    book.name ?? "Unknown",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                              Expanded(
+                                child: Image.network(
+                                  book.image!,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  book.name!,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
@@ -128,12 +112,87 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                  );
-                } else {
-                  return const Center(child: Text('No books available.'));
-                }
-              },
+                    childCount: books.length,
+                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 0.7,
+                  ),
+                );
+              } else {
+                return const SliverToBoxAdapter(
+                  child: Center(child: Text('No books available.')),
+                );
+              }
+            },
+          ),
+
+          // Section Title - Recommended Books
+          SliverToBoxAdapter(
+            child: Container(
+              padding: const EdgeInsets.only(top: 16, left: 8),
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                "Recommended Books",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
             ),
+          ),
+
+          // Recommended Books Section
+          FutureBuilder<List<dynamic>>(
+            future: openLibraryAPI.fetchRecommendedBooks(bookController),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              } else {
+                return SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                      final book = snapshot.data![index];
+                      final coverUrl = book is Book
+                          ? book.image
+                          : openLibraryAPI.getBookCover(book['cover_i'].toString());
+                      return Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Image.network(
+                                coverUrl ?? 'https://i.imgur.com/placeholder.png',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                book is Book
+                                    ? book.name ?? "Unknown"
+                                    : book['title'] ?? "Unknown Title",
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    childCount: snapshot.data!.length,
+                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 0.7,
+                  ),
+                );
+              }
+            },
           ),
         ],
       ),

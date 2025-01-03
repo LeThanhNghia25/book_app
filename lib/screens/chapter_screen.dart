@@ -1,3 +1,4 @@
+import 'package:book_app/screens/read_screen.dart';
 import 'package:book_app/state/state_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,7 +39,14 @@ class ChapterScreen extends ConsumerWidget {
               return GestureDetector (
                 onTap: () {
                   ref.read(chapterSelected.notifier).state = book.chapters![index];
-                  Navigator.pushNamed(context, '/read');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReadScreen(
+                        chapter: book.chapters![index],  // Truyền chapter trực tiếp
+                      ),
+                    ),
+                  );
                 },
                 child: Column (
                   children: [
