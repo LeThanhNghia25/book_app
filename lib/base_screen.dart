@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
-import 'screens/chapter_screen.dart';
-import 'screens/read_screen.dart';
 import 'screens/user_screen.dart';
 import 'widgets/footer.dart';
 import 'widgets/header.dart';
@@ -20,8 +18,8 @@ class _BaseScreenState extends State<BaseScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const ChapterScreen(),
-    const ReadScreen(),
+    const UserScreen(),
+    const UserScreen(),
     const UserScreen(),
   ];
 
