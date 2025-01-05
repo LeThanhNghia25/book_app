@@ -6,7 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/open_library_api.dart';
+import '../services/google_books_api.dart';
 import '../state/state_manager.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -17,7 +17,7 @@ class HomeScreen extends ConsumerWidget {
     final database = FirebaseDatabase.instanceFor(app: Firebase.app());
     final bannerController = BannerController(database);
     final bookController = BookController(database);
-    final openLibraryAPI = OpenLibraryAPI();
+    final googleBooksAPI = GoogleBooksAPI();
 
     return Scaffold(
       body: CustomScrollView(
@@ -29,23 +29,19 @@ class HomeScreen extends ConsumerWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError ||
-                    !snapshot.hasData ||
-                    snapshot.data!.isEmpty) {
+                } else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text('No banners available.'));
                 } else {
                   return CarouselSlider(
                     items: snapshot.data!
                         .map((url) => Builder(
-                              builder: (context) =>
-                                  Image.network(url, fit: BoxFit.cover),
-                            ))
+                      builder: (context) => Image.network(url, fit: BoxFit.cover),
+                    ))
                         .toList(),
                     options: CarouselOptions(
                       autoPlay: true,
                       enlargeCenterPage: true,
                       viewportFraction: 1,
-                      initialPage: 0,
                       height: MediaQuery.of(context).size.height / 3,
                     ),
                   );
@@ -83,7 +79,7 @@ class HomeScreen extends ConsumerWidget {
 
                 return SliverGrid(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) {
+                        (context, index) {
                       final book = books[index];
                       return GestureDetector(
                         onTap: () {
@@ -129,21 +125,21 @@ class HomeScreen extends ConsumerWidget {
             },
           ),
 
-          // Section Title - Recommended Books
+          // Section Title - Trending Books
           SliverToBoxAdapter(
             child: Container(
               padding: const EdgeInsets.only(top: 16, left: 8),
               alignment: Alignment.centerLeft,
               child: const Text(
-                "Recommended Books",
+                "Trending Books",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
           ),
 
-          // Recommended Books Section
+          // Trending Books from Google Books API
           FutureBuilder<List<dynamic>>(
-            future: openLibraryAPI.fetchRecommendedBooks(bookController),
+            future: googleBooksAPI.fetchTrendingBooks(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const SliverToBoxAdapter(
@@ -153,26 +149,23 @@ class HomeScreen extends ConsumerWidget {
                 return SliverGrid(
                   delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                      final book = snapshot.data![index];
-                      final coverUrl = book is Book
-                          ? book.image
-                          : openLibraryAPI.getBookCover(book['cover_i'].toString());
+                      final book = snapshot.data![index]['volumeInfo'];
+                      final coverUrl = googleBooksAPI.getBookCover(book);
+
                       return Card(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: Image.network(
-                                coverUrl ?? 'https://i.imgur.com/placeholder.png',
+                                coverUrl,
                                 fit: BoxFit.cover,
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                book is Book
-                                    ? book.name ?? "Unknown"
-                                    : book['title'] ?? "Unknown Title",
+                                book['title'] ?? "Unknown Title",
                                 style: const TextStyle(fontWeight: FontWeight.bold),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
