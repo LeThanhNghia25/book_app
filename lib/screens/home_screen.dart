@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/google_books_api.dart';
 import '../state/state_manager.dart';
+import 'all_books_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -50,19 +51,32 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // Section Title - Books
+          // Section Title - Books + See More Button
           SliverToBoxAdapter(
-            child: Container(
-              padding: const EdgeInsets.only(top: 16, left: 8),
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                "Books",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Books",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AllBooksScreen()),
+                      );
+                    },
+                    child: const Text("See More"),
+                  ),
+                ],
               ),
             ),
           ),
 
-          // Books Section (3 cột, 3 hàng)
+          // Books Section (3 cột, 3 hàng - hiển thị 9 quyển)
           FutureBuilder<List<Book>>(
             future: bookController.fetchBooks(),
             builder: (context, snapshot) {
@@ -76,7 +90,6 @@ class HomeScreen extends ConsumerWidget {
                 );
               } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                 final books = snapshot.data!.take(9).toList();
-
                 return SliverGrid(
                   delegate: SliverChildBuilderDelegate(
                         (context, index) {
