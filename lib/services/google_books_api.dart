@@ -5,7 +5,7 @@ class GoogleBooksAPI {
   static const String _baseUrl = 'https://www.googleapis.com/books/v1/volumes';
 
   // Lấy sách thịnh hành (trending) từ Google Books API
-  Future<List<dynamic>> fetchTrendingBooks({int limit = 10}) async {
+  Future<List<dynamic>> fetchTrendingBooks({int limit = 6}) async {
     final response = await http.get(
       Uri.parse('$_baseUrl?q=trending&maxResults=$limit'),
     );
