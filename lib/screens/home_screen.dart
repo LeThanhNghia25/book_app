@@ -97,7 +97,7 @@ class HomeScreen extends ConsumerWidget {
                       return GestureDetector(
                         onTap: () {
                           ref.read(booksSelected.notifier).state = book;
-                          Navigator.pushNamed(context, "/chapters");
+                          Navigator.pushNamed(context, "/bookDetails");
                         },
                         child: Card(
                           elevation: 8,
@@ -158,11 +158,20 @@ class HomeScreen extends ConsumerWidget {
                 return const SliverToBoxAdapter(
                   child: Center(child: CircularProgressIndicator()),
                 );
+              } else if (snapshot.hasError) {
+                return SliverToBoxAdapter(
+                  child: Center(child: Text('Error: ${snapshot.error}')),
+                );
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Center(child: Text('No trending books available.')),
+                );
               } else {
+                final books = snapshot.data!;
                 return SliverGrid(
                   delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                      final book = snapshot.data![index]['volumeInfo'];
+                      final book = books[index]['volumeInfo'];
                       final coverUrl = googleBooksAPI.getBookCover(book);
 
                       return Card(
@@ -188,7 +197,7 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                    childCount: snapshot.data!.length,
+                    childCount: books.length,
                   ),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
