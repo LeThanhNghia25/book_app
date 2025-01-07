@@ -7,16 +7,17 @@ class GoogleBooksAPI {
   // Lấy sách thịnh hành (trending) từ Google Books API
   Future<List<dynamic>> fetchTrendingBooks({int limit = 6}) async {
     final response = await http.get(
-      Uri.parse('$_baseUrl?q=trending&maxResults=$limit'),
+      Uri.parse('$_baseUrl?q=subject:fiction&orderBy=newest&maxResults=$limit'),
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      return data['items'] ?? [];  // Trả về danh sách sách
+      return data['items'] ?? [];
     } else {
       throw Exception('Failed to fetch trending books from Google Books');
     }
   }
+
 
   // Lấy ảnh bìa sách
   String getBookCover(Map<String, dynamic> volumeInfo) {
