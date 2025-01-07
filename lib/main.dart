@@ -1,10 +1,9 @@
 import 'dart:io';
-import 'package:book_app/screens/bookDetails_screen.dart';
 import 'package:book_app/screens/chapter_screen.dart';
+import 'package:book_app/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'base_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,11 +29,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Book App',
-      home: const BaseScreen(),
+      home: LoginScreen(),  // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
       routes: {
-        '/bookDetails': (context) => BookDetails(),
+        '/chapters': (context) => const ChapterScreen(),
       },
     );
   }
-
 }
