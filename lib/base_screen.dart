@@ -38,12 +38,12 @@ class _BaseScreenState extends State<BaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const HeaderWithSearch(),  // Thêm header vào đây
+      appBar: const HeaderWithSearch(),
       body: Container(
         decoration: const BoxDecoration(
           border: Border(
-            left: BorderSide(width: 2.0, color: Colors.black12),  // Border trái
-            right: BorderSide(width: 2.0, color: Colors.black12), // Border phải
+            left: BorderSide(width: 2.0, color: Colors.black12),
+            right: BorderSide(width: 2.0, color: Colors.black12),
           ),
         ),
         child: IndexedStack(
