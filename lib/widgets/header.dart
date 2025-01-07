@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:book_app/state/state_manager.dart';
 import 'package:book_app/controllers/qr_sanner_controller.dart';
 import 'package:book_app/screens/chapter_screen.dart';
+import 'package:book_app/screen/register_sreen.dart';
+import 'package:book_app/screen/login_screen.dart';
 import '../models/book.dart';
 
 class HeaderWithSearch extends ConsumerWidget implements PreferredSizeWidget {
