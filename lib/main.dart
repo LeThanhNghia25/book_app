@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:book_app/screens/chapter_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -26,9 +27,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Book App',
-      home: BaseScreen(),  // BaseScreen làm màn hình chính
+      home: const BaseScreen(),
+      routes: {
+        '/chapters': (context) => const ChapterScreen(),  // Định tuyến màn hình ChapterScreen
+      },
     );
   }
+
 }

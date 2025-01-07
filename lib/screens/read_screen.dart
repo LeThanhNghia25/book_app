@@ -1,10 +1,12 @@
+import 'package:book_app/models/book.dart';
 import 'package:book_app/state/state_manager.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ReadScreen extends ConsumerWidget {
-  const ReadScreen({super.key});
+  final Chapter chapter;
+  const ReadScreen({super.key, required this.chapter});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
