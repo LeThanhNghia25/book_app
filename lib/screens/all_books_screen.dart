@@ -15,8 +15,17 @@ class AllBooksScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("All Books"),
         backgroundColor: const Color(0xFFF44A3E),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),  // Đổi màu icon về trắng
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Center(
+          child: Text(
+            "All Books",
+            style: TextStyle(color: Colors.white), // Đảm bảo chữ có màu trắng
+          ),
+        ),
       ),
       body: FutureBuilder<List<Book>>(
         future: bookController.fetchBooks(),
