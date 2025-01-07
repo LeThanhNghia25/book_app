@@ -18,7 +18,6 @@ class GoogleBooksAPI {
     }
   }
 
-
   // Lấy ảnh bìa sách
   String getBookCover(Map<String, dynamic> volumeInfo) {
     if (volumeInfo['imageLinks'] != null) {
