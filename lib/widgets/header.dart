@@ -5,6 +5,7 @@ import 'package:book_app/state/state_manager.dart';
 import 'package:book_app/controllers/qr_sanner_controller.dart';
 import 'package:book_app/screens/chapter_screen.dart';
 import '../models/book.dart';
+import 'package:diacritic/diacritic.dart';
 
 class HeaderWithSearch extends ConsumerWidget implements PreferredSizeWidget {
   const HeaderWithSearch({super.key});
@@ -120,8 +121,12 @@ class CustomSearch extends SearchDelegate {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
+          // Loại bỏ dấu (diacritics) trước khi so sánh
+          final normalizedQuery = removeDiacritics(query.toLowerCase());
+
           final suggestions = snapshot.data!
-              .where((book) => book.toLowerCase().contains(query.toLowerCase()))
+              .where((book) =>
+              removeDiacritics(book.toLowerCase()).contains(normalizedQuery))
               .toList();
 
           return ListView.builder(
@@ -154,7 +159,7 @@ class CustomSearch extends SearchDelegate {
             },
           );
         } else {
-          return const Center(child: Text('No data available.'));
+          return const Center(child: Text('Không có dữ liệu.'));
         }
       },
     );
