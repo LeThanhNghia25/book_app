@@ -1,3 +1,4 @@
+import 'package:book_app/screens/register_sreen.dart';
 import 'package:flutter/material.dart';
 import '../base_screen.dart';
 import 'package:book_app/controllers/login_controller.dart'; // Import LoginController
@@ -112,6 +113,36 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               child: Text('ĐĂNG NHẬP'),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Chưa có tài khoản? ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    // Chuyển đến màn hình đăng ký
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterScreen()), // Đảm bảo RegisterScreen đã được tạo
+                    );
+                  },
+                  child: Text(
+                    'Đăng ký ngay',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
