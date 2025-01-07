@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:book_app/screens/bookDetails_screen.dart';
 import 'package:book_app/screens/chapter_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
       title: 'Book App',
       home: const BaseScreen(),
       routes: {
-        '/chapters': (context) => const ChapterScreen(),  // Định tuyến màn hình ChapterScreen
+        '/bookDetails': (context) => BookDetails(),
       },
     );
   }

@@ -97,7 +97,7 @@ class HomeScreen extends ConsumerWidget {
                       return GestureDetector(
                         onTap: () {
                           ref.read(booksSelected.notifier).state = book;
-                          Navigator.pushNamed(context, "/chapters");
+                          Navigator.pushNamed(context, "/bookDetails");
                         },
                         child: Card(
                           elevation: 8,
