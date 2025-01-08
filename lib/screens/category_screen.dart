@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../controllers/book_details_controller.dart';
+import '../models/book.dart';
+import '../state/state_manager.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key});
@@ -25,7 +30,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
       // Truy vấn Firebase để lấy danh sách sách
       DatabaseReference bookRef = FirebaseDatabase.instance.ref('Books');
       DataSnapshot snapshot = await bookRef.get();
-      print('Dữ liệu snapshot: ${snapshot.value}'); // Debug
 
       if (snapshot.exists && snapshot.value is Map) {
         // Chuyển đổi snapshot.value sang Map<dynamic, dynamic>
@@ -38,8 +42,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
             .expand((category) => (category as String).split(',').map((cat) => cat.trim()))
             .toSet()
             .toList();
-
-        print('Danh mục đã tải: $loadedCategories'); // Debug
 
         // Cập nhật danh sách sách và danh mục
         setState(() {
@@ -56,13 +58,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
           isLoading = false;
         });
       } else {
-        print('Không có dữ liệu.');
         setState(() {
           isLoading = false;
         });
       }
     } catch (e) {
-      print('Lỗi khi tải danh mục từ Firebase: $e');
       setState(() {
         isLoading = false;
       });
@@ -124,7 +124,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 }
 
-class BooksByCategoryScreen extends StatelessWidget {
+class BooksByCategoryScreen extends ConsumerWidget {
   final String category;
   final List<Map<String, dynamic>> books;
 
@@ -135,8 +135,7 @@ class BooksByCategoryScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    // Lọc sách theo thể loại
+  Widget build(BuildContext context, WidgetRef ref) {
     final filteredBooks = books.where((book) {
       final bookCategories = (book['category'] as String)
           .split(',')
@@ -150,7 +149,7 @@ class BooksByCategoryScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF44A3E),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),  // Change color to white
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Center(
@@ -175,8 +174,8 @@ class BooksByCategoryScreen extends StatelessWidget {
                 final book = filteredBooks[index];
                 return GestureDetector(
                   onTap: () {
-                    // Navigate to the chapters screen
-                    Navigator.pushNamed(context, "/chapters", arguments: book);
+                    ref.read(selectedBookProvider.notifier).state = Book.fromJson(book);
+                    Navigator.pushNamed(context, "/bookDetails");
                   },
                   child: Card(
                     elevation: 8,
@@ -200,7 +199,7 @@ class BooksByCategoryScreen extends StatelessWidget {
                   ),
                 );
               },
-              childCount: filteredBooks.length, // Display all filtered books
+              childCount: filteredBooks.length,
             ),
           ),
         ],
