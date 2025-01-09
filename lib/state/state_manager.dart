@@ -20,3 +20,6 @@ final firebaseDatabaseProvider = Provider<FirebaseDatabase>((ref) {
   );
 });
 
+// Quản lý trạng thái sách được chọn
+final selectedBookProvider = StateProvider<Book?>((ref) => null);
+

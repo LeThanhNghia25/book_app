@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:book_app/screens/book_details_screen.dart';
 import 'package:book_app/screens/chapter_screen.dart';
 import 'package:book_app/screens/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +32,14 @@ class MyApp extends StatelessWidget {
       title: 'Book App',
       home: LoginScreen(),  // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
       routes: {
+        '/bookDetails': (context) => const BookDetails(),
         '/chapters': (context) => const ChapterScreen(),
       },
+      onUnknownRoute: (settings) => MaterialPageRoute(
+        builder: (context) => const Scaffold(
+          body: Center(child: Text('Trang không tồn tại!')),
+        ),
+      ),
     );
   }
 }
