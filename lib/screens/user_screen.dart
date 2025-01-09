@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/user_controller.dart';
 import '../models/user.dart';
+import 'login_screen.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
   const UserScreen({super.key});
@@ -40,7 +41,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
               padding: const EdgeInsets.all(12),
               physics: const BouncingScrollPhysics(),
               children: [
-                Container(height: 35),
+                const SizedBox(height: 35),
                 userTile(user),
                 divider(),
                 colorTiles(),
@@ -56,7 +57,6 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     );
   }
 
-  // Hiển thị thông tin user từ Firebase
   Widget userTile(User user) {
     return ListTile(
       leading: CircleAvatar(
@@ -82,8 +82,8 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   Widget colorTiles() {
     return Column(
       children: [
-        colorTile(Icons.person_outline, Colors.deepPurple, "Person data"),
-        colorTile(Icons.settings_outlined, Colors.blue, "Settings"),
+        colorTile(Icons.person_outline, Colors.deepPurple, "Thông tin cá nhân"),
+        colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt"),
         colorTile(Icons.credit_card, Colors.pink, "Payment"),
         colorTile(Icons.favorite_border, Colors.orange, "Referral code"),
       ],
@@ -93,20 +93,21 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   Widget bwTitles() {
     return Column(
       children: [
-        bwTitle(Icons.info_outline, "FAQs"),
+        bwTitle(Icons.info_outline, "Đăng xuất", onTap: _handleLogout),
         bwTitle(Icons.border_color_outlined, "HandBook"),
         bwTitle(Icons.textsms_outlined, "Community"),
       ],
     );
   }
 
-  Widget bwTitle(IconData icon, String text) {
-    return colorTile(icon, Colors.black, text, blackAndWhite: true);
+  Widget bwTitle(IconData icon, String text, {VoidCallback? onTap}) {
+    return colorTile(icon, Colors.black, text, blackAndWhite: true, onTap: onTap);
   }
 
   Widget colorTile(IconData icon, Color color, String text,
-      {bool blackAndWhite = false}) {
+      {bool blackAndWhite = false, VoidCallback? onTap}) {
     return ListTile(
+      onTap: onTap,
       leading: Container(
         height: 45,
         width: 45,
@@ -128,6 +129,20 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     return Text(
       text,
       style: TextStyle(fontWeight: fontWeight ?? FontWeight.normal),
+    );
+  }
+
+  Future<void> _handleLogout() async {
+    final userController = UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
+
+    // Xóa thông tin người dùng khỏi bộ nhớ hoặc trạng thái ứng dụng
+    // Bạn có thể thêm bất kỳ phương thức nào ở đây, ví dụ: xóa thông tin tài khoản
+
+    // Điều hướng về màn hình đăng nhập
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+          (route) => false, // Xóa toàn bộ stack
     );
   }
 }
