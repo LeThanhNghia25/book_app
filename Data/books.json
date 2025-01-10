@@ -89,28 +89,28 @@
   "Users": {
     "user1": {
       "avatar": "https://i.imgur.com/mOFr66N.png",
-      "email": "adminbookapp@example.com",
+      "email": "adminbookapp@gmail.com",
       "name": "Admin",
       "password": "123",
       "role": 0
     },
     "user2": {
       "avatar": "https://i.imgur.com/mOFr66N.png",
-      "email": "lethanhnghia@example.com",
+      "email": "lethanhnghia@gmail.com",
       "name": "Lê Thành Nghĩa",
       "password": "123",
       "role": 1
     },
     "user3": {
       "avatar": "https://i.imgur.com/uvZ7IdP.png",
-      "email": "lehuuphuoc@example.com",
+      "email": "lehuuphuoc@gmail.com",
       "name": "Lê Hữu Phước",
       "password": "123",
       "role": 1
     },
     "user4": {
       "avatar": "https://i.imgur.com/IKUuFvm.png",
-      "email": "truongdoannhat@example.com",
+      "email": "truongdoannhat@gmail.com",
       "name": "Trương Đoàn Nhất",
       "password": "123",
       "role": 1

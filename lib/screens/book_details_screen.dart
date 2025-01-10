@@ -1,9 +1,6 @@
-import 'package:book_app/models/book.dart';
 import 'package:book_app/state/state_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../controllers/book_details_controller.dart';
 
 class BookDetails extends ConsumerWidget {
   const BookDetails({super.key});
@@ -13,7 +10,7 @@ class BookDetails extends ConsumerWidget {
     final book = ref.watch(selectedBookProvider);  // Lấy dữ liệu sách từ provider
 
     if (book == null) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: Text('Không tìm thấy thông tin sách!'),
         ),

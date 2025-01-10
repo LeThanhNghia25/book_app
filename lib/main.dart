@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:book_app/screens/admin/admin_screen.dart';
 import 'package:book_app/screens/book_details_screen.dart';
 import 'package:book_app/screens/chapter_screen.dart';
 import 'package:book_app/screens/login_screen.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/bookDetails': (context) => const BookDetails(),
         '/chapters': (context) => const ChapterScreen(),
+        '/admin': (context) => const AdminScreen(),
       },
       onUnknownRoute: (settings) => MaterialPageRoute(
         builder: (context) => const Scaffold(
