@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import '../models/user.dart';
 
 class RegisterController {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
   final FirebaseDatabase _database = FirebaseDatabase.instance;
 
   // Hàm đăng ký người dùng
@@ -14,81 +15,80 @@ class RegisterController {
     required String name,
     required BuildContext context,
   }) async {
-    // Kiểm tra các điều kiện nhập liệu
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty || name.isEmpty) {
-      _showSnackbar(context, "Vui lòng nhập đầy đủ thông tin!");
-      return false;
-    }
-
-    if (!_isEmailValid(email)) {
-      _showSnackbar(context, "Email không hợp lệ!");
-      return false;
-    }
-
-    if (password != confirmPassword) {
-      _showSnackbar(context, "Mật khẩu và xác nhận mật khẩu không khớp!");
+    if (password.length < 6) {
+      _showSnackbar(context, "Mật khẩu phải có ít nhất 6 ký tự!");
       return false;
     }
 
     try {
       // Đăng ký người dùng mới với Firebase Authentication
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      print("Bắt đầu đăng ký người dùng...");
+      auth.UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      print("Đăng ký thành công!");
 
-      // Lấy thông tin người dùng từ Firebase Authentication
-      User? user = userCredential.user;
+      auth.User? firebaseUser = userCredential.user;
 
-      if (user != null) {
-        // Lấy reference của node Users
+      if (firebaseUser != null) {
         DatabaseReference usersRef = _database.ref('Users');
+        print("Kết nối Firebase Database thành công!");
 
-        // Lấy số lượng người dùng hiện tại để tính ID tiếp theo bằng phương thức get()
-        DataSnapshot snapshot = (await usersRef.get());
+        // Tạo ID tự tăng theo kiểu user1, user2, ...
+        String newUserId = await _generateNewUserId(usersRef);
+        print("Tạo ID mới: $newUserId");
 
-        int userCount = snapshot.exists ? snapshot.children.length : 0;
-        String newUserId = 'user${userCount + 1}';  // Tạo ID cho người dùng mới (user1, user2, ...)
+        // Lưu người dùng vào Firebase Database
+        final newUser = User(
+          id: newUserId,
+          name: name,
+          email: email,
+          password: password,
+          role: 1, // Mặc định role là user
+          avatar: 'https://i.imgur.com/mOFr66N.png',
+        );
 
-        // Lưu thông tin người dùng vào Firebase Realtime Database với ID tự tạo
-        final newUserRef = usersRef.child(newUserId);  // Lưu thông tin dưới dạng userId
-
-        await newUserRef.set({
-          'userId': newUserId,  // Lưu userId được tự động tạo
-          'email': email,
-          'name': name,  // Lưu tên vào Firebase
-          'role': 'user',  // Vai trò người dùng
-          'avatar': 'https://i.imgur.com/mOFr66N.png',  // Avatar mặc định
-          'createdAt': DateTime.now().toIso8601String(), // Thêm thời gian tạo tài khoản
-        });
-
+        await usersRef.child(newUserId).set(newUser.toJson());
+        print("Lưu người dùng thành công: ${newUser.toJson()}");
         _showSnackbar(context, "Đăng ký thành công!");
         return true;
       } else {
         _showSnackbar(context, "Đăng ký thất bại!");
         return false;
       }
-    } on FirebaseAuthException catch (e) {
-      // Xử lý lỗi đăng ký
-      String message = 'Đăng ký thất bại';
+    } on auth.FirebaseAuthException catch (e) {
+      print("Lỗi FirebaseAuthException: ${e.code}");
       if (e.code == 'email-already-in-use') {
-        message = 'Email đã tồn tại!';
+        _showSnackbar(context, "Email đã được sử dụng!");
+      } else if (e.code == 'weak-password') {
+        _showSnackbar(context, "Mật khẩu quá yếu! Hãy sử dụng mật khẩu mạnh hơn.");
+      } else {
+        _showSnackbar(context, "Đăng ký thất bại! Lỗi: ${e.message}");
       }
-      _showSnackbar(context, message);
       return false;
     }
   }
 
-  // Hàm kiểm tra tính hợp lệ của email
-  bool _isEmailValid(String email) {
-    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-    return emailRegex.hasMatch(email);
+  // Hàm tạo ID tự động user1, user2, ...
+  Future<String> _generateNewUserId(DatabaseReference usersRef) async {
+    DataSnapshot snapshot = await usersRef.get();
+    if (snapshot.exists) {
+      final usersMap = snapshot.value as Map<dynamic, dynamic>;
+      int maxId = 0;
+      for (var key in usersMap.keys) {
+        if (key.toString().startsWith("user")) {
+          int currentId = int.tryParse(key.toString().substring(4)) ?? 0;
+          maxId = currentId > maxId ? currentId : maxId;
+        }
+      }
+      return 'user${maxId + 1}';
+    } else {
+      return 'user1';
+    }
   }
 
-  // Hàm hiển thị thông báo Snackbar
   void _showSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 }

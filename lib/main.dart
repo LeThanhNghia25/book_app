@@ -31,7 +31,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Book App',
-      home: LoginScreen(),  // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
+      home: const LoginScreen(),  // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
+      // home: const BaseScreen(selectedIndex: 0),
       routes: {
         '/bookDetails': (context) => const BookDetails(),
         '/chapters': (context) => const ChapterScreen(),
