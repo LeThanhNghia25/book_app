@@ -1,11 +1,9 @@
-import 'package:book_app/screens/profileEdit_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/user_controller.dart';
 import '../models/user.dart';
-import 'login_screen.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
   const UserScreen({super.key});
@@ -16,17 +14,13 @@ class UserScreen extends ConsumerStatefulWidget {
 
 class _UserScreenState extends ConsumerState<UserScreen> {
   late Future<User?> _userFuture;
-  late String userId;
-
 
   @override
   void initState() {
     super.initState();
-    userId = "someUserId"; // Thay thế với userId thật
     final database = FirebaseDatabase.instanceFor(app: Firebase.app());
     final userController = UserController(database);
-    _userFuture = userController.fetchUserById(userId);
-
+    _userFuture = userController.fetchDefaultUser();
   }
 
   @override
@@ -46,7 +40,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
               padding: const EdgeInsets.all(12),
               physics: const BouncingScrollPhysics(),
               children: [
-                const SizedBox(height: 35),
+                Container(height: 35),
                 userTile(user),
                 divider(),
                 colorTiles(),
@@ -62,6 +56,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     );
   }
 
+  // Hiển thị thông tin user từ Firebase
   Widget userTile(User user) {
     return ListTile(
       leading: CircleAvatar(
@@ -87,9 +82,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   Widget colorTiles() {
     return Column(
       children: [
-        colorTile(Icons.person_outline, Colors.deepPurple, "Thông tin cá nhân", ),
-        colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt"),
-        colorTile(Icons.credit_card, Colors.pink, "Payment"),
+        colorTile(Icons.person_outline, Colors.deepPurple, "Person data"),
+        colorTile(Icons.settings_outlined, Colors.blue, "Settings"),
+        colorTile(Icons.bookmark_border, Colors.pink, "Lưu bài viết"),
         colorTile(Icons.favorite_border, Colors.orange, "Referral code"),
       ],
     );
@@ -98,21 +93,20 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   Widget bwTitles() {
     return Column(
       children: [
-        bwTitle(Icons.info_outline, "Đăng xuất", onTap: _handleLogout),
+        bwTitle(Icons.info_outline, "FAQs"),
         bwTitle(Icons.border_color_outlined, "HandBook"),
         bwTitle(Icons.textsms_outlined, "Community"),
       ],
     );
   }
 
-  Widget bwTitle(IconData icon, String text, {VoidCallback? onTap}) {
-    return colorTile(icon, Colors.black, text, blackAndWhite: true, onTap: onTap);
+  Widget bwTitle(IconData icon, String text) {
+    return colorTile(icon, Colors.black, text, blackAndWhite: true);
   }
 
   Widget colorTile(IconData icon, Color color, String text,
-      {bool blackAndWhite = false, VoidCallback? onTap}) {
+      {bool blackAndWhite = false}) {
     return ListTile(
-      onTap: onTap,
       leading: Container(
         height: 45,
         width: 45,
@@ -127,6 +121,12 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         fontWeight: FontWeight.w500,
       ),
       trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black, size: 20),
+      onTap: () {
+        if (text == "Lưu bài viết") {
+          // Điều hướng sang trang lưu bài viết
+          Navigator.pushNamed(context, '/savedArticles');
+        }
+      },
     );
   }
 
@@ -136,30 +136,4 @@ class _UserScreenState extends ConsumerState<UserScreen> {
       style: TextStyle(fontWeight: fontWeight ?? FontWeight.normal),
     );
   }
-
-  Future<void> _handleLogout() async {
-    final userController = UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
-
-    // Xóa thông tin người dùng khỏi bộ nhớ hoặc trạng thái ứng dụng
-    // Bạn có thể thêm bất kỳ phương thức nào ở đây, ví dụ: xóa thông tin tài khoản
-
-    // Điều hướng về màn hình đăng nhập
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-          (route) => false, // Xóa toàn bộ stack
-    );
-  }
-  // void _goToProfileEdit(User user) {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => ProfileEditScreen(user:user), // Chuyển User hiện tại
-  //     ),
-  //   );
-  // }
-
-
 }
-
-

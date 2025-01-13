@@ -1,6 +1,4 @@
-
-
-import 'package:book_app/screens/book_details_screen.dart';
+import 'package:book_app/screens/admin/admin_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/user_screen.dart';
@@ -23,7 +21,7 @@ class _BaseScreenState extends State<BaseScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const CategoryScreen(),
-    const UserScreen(),
+    const AdminScreen(),
     const UserScreen(),
   ];
 
@@ -43,17 +41,9 @@ class _BaseScreenState extends State<BaseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const HeaderWithSearch(),
-      body: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            left: BorderSide(width: 2.0, color: Colors.black12),
-            right: BorderSide(width: 2.0, color: Colors.black12),
-          ),
-        ),
-        child: IndexedStack(
-          index: _currentIndex,
-          children: _screens,
-        ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
       ),
       bottomNavigationBar: Footer(
         selectedIndex: _currentIndex,

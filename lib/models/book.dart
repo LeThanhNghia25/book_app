@@ -4,6 +4,27 @@ class Book {
 
   Book({this.id, this.category, this.name, this.image, this.chapters});
 
+
+  // Chuyển từ map
+  factory Book.fromMap(Map<String, dynamic> map) {
+    return Book(
+      id: map['id'],
+      name: map['name'],
+      category: map['category'],
+      image: map['image'],
+    );
+  }
+
+  // Chuyển thành map để lưu vào Firebase
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'category': category,
+      'image': image,
+    };
+  }
+
   // Sửa lại fromJson để nhận 1 tham số duy nhất
   Book.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -49,3 +70,6 @@ class Chapter {
     return data;
   }
 }
+
+
+

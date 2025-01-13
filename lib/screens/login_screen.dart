@@ -4,6 +4,8 @@ import '../base_screen.dart';
 import 'package:book_app/controllers/login_controller.dart'; // Import LoginController
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -20,14 +22,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Vui lòng nhập email và mật khẩu!")),
+        const SnackBar(content: Text("Vui lòng nhập email và mật khẩu!")),
       );
       return;
     }
 
     if (!_isEmailValid(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Email không hợp lệ!")),
+        const SnackBar(content: Text("Email không hợp lệ!")),
       );
       return;
     }
@@ -38,11 +40,11 @@ class _LoginScreenState extends State<LoginScreen> {
       // Sau khi đăng nhập thành công, chuyển đến BaseScreen (màn hình chính có footer và header)
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => BaseScreen()), // Chuyển đến BaseScreen
+        MaterialPageRoute(builder: (context) => const BaseScreen()), // Chuyển đến BaseScreen
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.")),
+        const SnackBar(content: Text("Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.")),
       );
     }
   }
@@ -69,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Đăng Nhập',
               style: TextStyle(
                 fontSize: 40,
@@ -77,13 +79,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             TextField(
               controller: _emailController,
               focusNode: _emailFocusNode,  // Thêm focusNode
               decoration: InputDecoration(
                 hintText: 'Email',
-                hintStyle: TextStyle(color: Colors.white54),
+                hintStyle: const TextStyle(color: Colors.white54),
                 filled: true,
                 fillColor: Colors.grey[800],
                 border: OutlineInputBorder(
@@ -91,10 +93,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
               keyboardType: TextInputType.emailAddress,
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             TextField(
               controller: _passwordController,
               obscureText: true,
@@ -120,13 +122,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: Text('ĐĂNG NHẬP'),
+              child: const Text('ĐĂNG NHẬP'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'Chưa có tài khoản? ',
                   style: TextStyle(
                     color: Colors.white,
@@ -141,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialPageRoute(builder: (context) => RegisterScreen()), // Đảm bảo RegisterScreen đã được tạo
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'Đăng ký ngay',
                     style: TextStyle(
                       color: Colors.blue,
