@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'base_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -31,7 +33,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Book App',
-      home: LoginScreen(),  // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
+      home: const LoginScreen(),  // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
+      // home: const BaseScreen(selectedIndex: 0),
       routes: {
         '/bookDetails': (context) => const BookDetails(),
         '/chapters': (context) => const ChapterScreen(),
