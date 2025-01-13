@@ -39,7 +39,7 @@ class UserController {
     if (snapshot.exists) {
       var userData = Map<String, dynamic>.from(snapshot.value as Map);
       userData['id'] = userId;
-      return User.fromJson(userData);
+      return User.fromJson(userData );
     }
     return null;
   }
@@ -56,5 +56,17 @@ class UserController {
     }
     return null;
   }
-
+  // // Phương thức cập nhật thông tin người dùng
+  // Future<void> updateUser(User user) async {
+  //   final userRef = _userRef.child(user.id);
+  //   await userRef.update({
+  //     'name': user.name,
+  //     'email': user.email,
+  //     'password': user.password, // Cập nhật mật khẩu nếu có thay đổi
+  //     'role': user.role,         // Cập nhật role nếu cần thiết
+  //     'avatar': user.avatar,     // Cập nhật avatar nếu có thay đổi
+  //   });
+  // }
 }
+
+

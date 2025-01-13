@@ -2,7 +2,7 @@ class User {
   final String id;
   final String name;
   final String email;
-  final String password;
+  late final String password;
   final int role;
   final String avatar;
 

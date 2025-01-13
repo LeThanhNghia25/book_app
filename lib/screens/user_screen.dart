@@ -1,3 +1,4 @@
+import 'package:book_app/screens/profileEdit_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +16,17 @@ class UserScreen extends ConsumerStatefulWidget {
 
 class _UserScreenState extends ConsumerState<UserScreen> {
   late Future<User?> _userFuture;
+  late String userId;
+
 
   @override
   void initState() {
     super.initState();
+    userId = "someUserId"; // Thay thế với userId thật
     final database = FirebaseDatabase.instanceFor(app: Firebase.app());
     final userController = UserController(database);
-    _userFuture = userController.fetchDefaultUser();
+    _userFuture = userController.fetchUserById(userId);
+
   }
 
   @override
@@ -82,7 +87,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   Widget colorTiles() {
     return Column(
       children: [
-        colorTile(Icons.person_outline, Colors.deepPurple, "Thông tin cá nhân"),
+        colorTile(Icons.person_outline, Colors.deepPurple, "Thông tin cá nhân", ),
         colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt"),
         colorTile(Icons.credit_card, Colors.pink, "Payment"),
         colorTile(Icons.favorite_border, Colors.orange, "Referral code"),
@@ -145,4 +150,16 @@ class _UserScreenState extends ConsumerState<UserScreen> {
           (route) => false, // Xóa toàn bộ stack
     );
   }
+  // void _goToProfileEdit(User user) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => ProfileEditScreen(user:user), // Chuyển User hiện tại
+  //     ),
+  //   );
+  // }
+
+
 }
+
+

@@ -12,7 +12,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final LoginController _loginController = LoginController();
-
+  final FocusNode _emailFocusNode = FocusNode();  // Thêm FocusNode
+  final FocusNode _passwordFocusNode = FocusNode();  // Thêm FocusNode
   void _handleLogin(BuildContext context) async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
@@ -51,7 +52,13 @@ class _LoginScreenState extends State<LoginScreen> {
     RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
     return emailRegex.hasMatch(email);
   }
-
+  @override
+  void dispose() {
+    // Hãy nhớ dispose khi không sử dụng nữa
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 30),
             TextField(
               controller: _emailController,
+              focusNode: _emailFocusNode,  // Thêm focusNode
               decoration: InputDecoration(
                 hintText: 'Email',
                 hintStyle: TextStyle(color: Colors.white54),
