@@ -15,4 +15,5 @@ class BookDetailsController {
 
   // Lấy cuốn sách hiện tại đang được chọn
   Book? get selectedBook => ref.read(selectedBookProvider);
+
 }

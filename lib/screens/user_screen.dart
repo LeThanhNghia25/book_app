@@ -84,7 +84,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
       children: [
         colorTile(Icons.person_outline, Colors.deepPurple, "Person data"),
         colorTile(Icons.settings_outlined, Colors.blue, "Settings"),
-        colorTile(Icons.credit_card, Colors.pink, "Payment"),
+        colorTile(Icons.bookmark_border, Colors.pink, "Lưu bài viết"),
         colorTile(Icons.favorite_border, Colors.orange, "Referral code"),
       ],
     );
@@ -121,6 +121,12 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         fontWeight: FontWeight.w500,
       ),
       trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black, size: 20),
+      onTap: () {
+        if (text == "Lưu bài viết") {
+          // Điều hướng sang trang lưu bài viết
+          Navigator.pushNamed(context, '/savedArticles');
+        }
+      },
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:book_app/screens/book_details_screen.dart';
 import 'package:book_app/screens/chapter_screen.dart';
 import 'package:book_app/screens/login_screen.dart';
+import 'package:book_app/screens/saved_articles_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/bookDetails': (context) => const BookDetails(),
         '/chapters': (context) => const ChapterScreen(),
+        '/savedArticles': (context) => const SavedArticlesScreen(),
       },
       onUnknownRoute: (settings) => MaterialPageRoute(
         builder: (context) => const Scaffold(
