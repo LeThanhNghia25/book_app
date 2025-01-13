@@ -1,6 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 
 import '../models/user.dart';
+import '../screens/login_screen.dart';
 
 class UserController {
   final DatabaseReference _userRef;
@@ -67,6 +69,19 @@ class UserController {
   //     'avatar': user.avatar,     // Cập nhật avatar nếu có thay đổi
   //   });
   // }
-}
+
+  // Hàm đăng xuất
+  void logout(BuildContext context) {
+    // Sau đó chuyển hướng về màn hình đăng nhập
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
+  }
+
+
+
 
 
