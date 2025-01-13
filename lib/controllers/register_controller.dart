@@ -22,22 +22,18 @@ class RegisterController {
 
     try {
       // Đăng ký người dùng mới với Firebase Authentication
-      print("Bắt đầu đăng ký người dùng...");
       auth.UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      print("Đăng ký thành công!");
 
       auth.User? firebaseUser = userCredential.user;
 
       if (firebaseUser != null) {
         DatabaseReference usersRef = _database.ref('Users');
-        print("Kết nối Firebase Database thành công!");
 
         // Tạo ID tự tăng theo kiểu user1, user2, ...
         String newUserId = await _generateNewUserId(usersRef);
-        print("Tạo ID mới: $newUserId");
 
         // Lưu người dùng vào Firebase Database
         final newUser = User(
@@ -50,7 +46,6 @@ class RegisterController {
         );
 
         await usersRef.child(newUserId).set(newUser.toJson());
-        print("Lưu người dùng thành công: ${newUser.toJson()}");
         _showSnackbar(context, "Đăng ký thành công!");
         return true;
       } else {
@@ -58,7 +53,6 @@ class RegisterController {
         return false;
       }
     } on auth.FirebaseAuthException catch (e) {
-      print("Lỗi FirebaseAuthException: ${e.code}");
       if (e.code == 'email-already-in-use') {
         _showSnackbar(context, "Email đã được sử dụng!");
       } else if (e.code == 'weak-password') {
