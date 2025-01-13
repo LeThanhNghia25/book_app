@@ -5,7 +5,7 @@
     "https://i.imgur.com/mOFr66N.png"
   ],
   "Books": {
-    "book1":{
+    "book1": {
       "Category": "Comedy,Adventure",
       "Chapters": [
         {
@@ -25,7 +25,6 @@
       "Image": "https://file.nhasachmienphi.com/jpg/nhasachmienphi-truyen-tranh-doremon-333102-0.jpg",
       "Name": "Doraemon"
     },
-
     "book2": {
       "Category": "Horror",
       "Chapters": [
@@ -45,7 +44,6 @@
       "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
       "Name": "Hà Thần"
     },
-
     "book3": {
       "Category": "Comedy",
       "Chapters": [
@@ -65,7 +63,6 @@
       "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-trang-quynh.jpg",
       "Name": "Trạng Quỳnh"
     },
-
     "book4": {
       "Category": "Detective, Criminal",
       "Chapters": [
@@ -84,36 +81,261 @@
       ],
       "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-luat-ngam.jpg",
       "Name": "Luật Ngầm"
+    },
+    "book5": {
+      "Category": "Comedy,Adventure",
+      "Chapters": [
+        {
+          "Links": [
+            "https://file.nhasachmienphi.com/jpg/nhasachmienphi-one-piece-dao-hai-tac-335020-0.jpg",
+            "https://file.nhasachmienphi.com/jpg/nhasachmienphi-one-piece-dao-hai-tac-335020-1.jpg",
+            "https://file.nhasachmienphi.com/jpg/nhasachmienphi-one-piece-dao-hai-tac-335020-2.jpg",
+            "https://file.nhasachmienphi.com/jpg/nhasachmienphi-one-piece-dao-hai-tac-335020-3.jpg"
+          ],
+          "Name": "Chap 1"
+        },
+        {
+          "Links": [
+            "https://file.nhasachmienphi.com/jpg/nhasachmienphi-one-piece-dao-hai-tac-335021-0.jpg",
+            "https://file.nhasachmienphi.com/jpg/nhasachmienphi-one-piece-dao-hai-tac-335021-1.jpg",
+            "https://file.nhasachmienphi.com/jpg/nhasachmienphi-one-piece-dao-hai-tac-335021-2.jpg",
+            "https://file.nhasachmienphi.com/jpg/nhasachmienphi-one-piece-dao-hai-tac-335021-3.jpg"
+          ],
+          "Name": "Chap 2"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-one-piece-dao-hai-tac.jpg",
+      "Name": "One Piece – Đảo Hải Tặc"
+    },
+    "book6": {
+      "Category": "Comedy,Adventure",
+      "Chapters": [
+        {
+          "Links": [
+            "https://file.nhasachmienphi.com/pics/nhasachmienphi-tham-tu-lung-danh-conan-ban-dep-gosho-aoyama-333616-0.jpg",
+            "https://file.nhasachmienphi.com/pics/nhasachmienphi-tham-tu-lung-danh-conan-ban-dep-gosho-aoyama-333616-1.jpg",
+            "https://file.nhasachmienphi.com/pics/nhasachmienphi-tham-tu-lung-danh-conan-ban-dep-gosho-aoyama-333616-2.jpg",
+            "https://file.nhasachmienphi.com/pics/nhasachmienphi-tham-tu-lung-danh-conan-ban-dep-gosho-aoyama-333616-3.jpg"
+          ],
+          "Name": "Chap 1"
+        },
+        {
+          "Links": [
+            "https://file.nhasachmienphi.com/pics/nhasachmienphi-tham-tu-lung-danh-conan-ban-dep-gosho-aoyama-333617-0.jpg",
+            "https://file.nhasachmienphi.com/pics/nhasachmienphi-tham-tu-lung-danh-conan-ban-dep-gosho-aoyama-333617-1.jpg",
+            "https://file.nhasachmienphi.com/pics/nhasachmienphi-tham-tu-lung-danh-conan-ban-dep-gosho-aoyama-333617-2.jpg",
+            "https://file.nhasachmienphi.com/pics/nhasachmienphi-tham-tu-lung-danh-conan-ban-dep-gosho-aoyama-333617-3.jpg"
+          ],
+          "Name": "Chap 2"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/wp-content/uploads/Th%C3%A1m-t%E1%BB%AD-l%E1%BB%ABng-danh-conan-b%E1%BA%A3n-%C4%91%E1%BA%B9p-Gosho-Aoyoma.jpg",
+      "Name": "Thám Tử Lừng Danh Conan"
     }
   },
   "Users": {
     "user1": {
       "avatar": "https://i.imgur.com/mOFr66N.png",
-      "email": "adminbookapp@example.com",
+      "email": "adminbookapp@gmail.com",
       "name": "Admin",
       "password": "123",
       "role": 0
     },
     "user2": {
       "avatar": "https://i.imgur.com/mOFr66N.png",
-      "email": "lethanhnghia@example.com",
-      "name": "Lê Thành Nghĩa",
-      "password": "123",
+      "email": "user@gmail.com",
+      "name": "username",
+      "password": "1",
       "role": 1
+    }
+  },
+  "savedBooks": {
+    "-OGDUQKhQpyvQMpoWheS": {
+      "category": "Horror",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "name": "Hà Thần"
     },
-    "user3": {
-      "avatar": "https://i.imgur.com/uvZ7IdP.png",
-      "email": "lehuuphuoc@example.com",
-      "name": "Lê Hữu Phước",
-      "password": "123",
-      "role": 1
+    "-OGDVoTYFCckLFMOCqym": {
+      "category": "Horror",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "name": "Hà Thần"
     },
-    "user4": {
-      "avatar": "https://i.imgur.com/IKUuFvm.png",
-      "email": "truongdoannhat@example.com",
-      "name": "Trương Đoàn Nhất",
-      "password": "123",
-      "role": 1
+    "-OGDVrpZuZbKcI5OUXDx": {
+      "category": "Comedy,Adventure",
+      "image": "https://file.nhasachmienphi.com/jpg/nhasachmienphi-truyen-tranh-doremon-333102-0.jpg",
+      "name": "Doraemon"
+    },
+    "-OGDVvXUeuU6OBabb2kD": {
+      "category": "Detective, Criminal",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-luat-ngam.jpg",
+      "name": "Luật Ngầm"
+    },
+    "-OGDXHjBcLYXb0Vd54c9": {
+      "category": "Comedy,Adventure",
+      "image": "https://nhasachmienphi.com/wp-content/uploads/Th%C3%A1m-t%E1%BB%AD-l%E1%BB%ABng-danh-conan-b%E1%BA%A3n-%C4%91%E1%BA%B9p-Gosho-Aoyoma.jpg",
+      "name": "Thám Tử Lừng Danh Conan"
+    },
+    "-OGDXOV0kSWF7BQNAtX8": {
+      "category": "Detective, Criminal",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-luat-ngam.jpg",
+      "name": "Luật Ngầm"
+    },
+    "-OGDXRlNfBeeb3aHFmuQ": {
+      "category": "Detective, Criminal",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-luat-ngam.jpg",
+      "name": "Luật Ngầm"
+    },
+    "-OGDXcGOixUvnEpk5VqL": {
+      "category": "Horror",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "name": "Hà Thần"
+    },
+    "-OGDcH7YdoBLLShMDuxt": {
+      "category": "Horror",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "name": "Hà Thần"
+    },
+    "-OGDcp99GwNpP-FFLB3l": {
+      "category": "Horror",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "name": "Hà Thần"
+    },
+    "-OGDcwV7cph5-EXhOjQX": {
+      "category": "Horror",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "name": "Hà Thần"
+    },
+    "-OGDd6eVSVY7bBBs7EsS": {
+      "category": "Comedy,Adventure",
+      "image": "https://nhasachmienphi.com/wp-content/uploads/Th%C3%A1m-t%E1%BB%AD-l%E1%BB%ABng-danh-conan-b%E1%BA%A3n-%C4%91%E1%BA%B9p-Gosho-Aoyoma.jpg",
+      "name": "Thám Tử Lừng Danh Conan"
+    },
+    "-OGDdYM-T94j8KjmB_gt": {
+      "category": "Comedy,Adventure",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-one-piece-dao-hai-tac.jpg",
+      "name": "One Piece – Đảo Hải Tặc"
+    },
+    "-OGDfIuUUtrIFdjPJVzn": {
+      "category": "Horror",
+      "image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "name": "Hà Thần"
+    }
+  },
+  "saved_books": {
+    "-OGDKgdXhbrtvioD1GP0": {
+      "Category": "Horror",
+      "Chapters": [
+        {
+          "Links": [
+            "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg"
+          ],
+          "Name": "Chương 1: Đội vớt xác năm sông"
+        },
+        {
+          "Links": [
+            "http://4.bp.blogspot.com/-06SK8POTw_A/Vp3JaIJ0SaI/AAAAAAAAACs/1ZH49AyiJY8/s1600/Doraemon%252Bv01%252Bc02%252B01.jpg"
+          ],
+          "Name": "Chương 2: Thuỷ quái dưới cầu"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "Name": "Hà Thần"
+    },
+    "-OGDLNaAS6mZTahxJXMi": {
+      "Category": "Horror",
+      "Chapters": [
+        {
+          "Links": [
+            "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg"
+          ],
+          "Name": "Chương 1: Đội vớt xác năm sông"
+        },
+        {
+          "Links": [
+            "http://4.bp.blogspot.com/-06SK8POTw_A/Vp3JaIJ0SaI/AAAAAAAAACs/1ZH49AyiJY8/s1600/Doraemon%252Bv01%252Bc02%252B01.jpg"
+          ],
+          "Name": "Chương 2: Thuỷ quái dưới cầu"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "Name": "Hà Thần"
+    },
+    "-OGDLj4GVlV23RIqMdG1": {
+      "Category": "Horror",
+      "Chapters": [
+        {
+          "Links": [
+            "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg"
+          ],
+          "Name": "Chương 1: Đội vớt xác năm sông"
+        },
+        {
+          "Links": [
+            "http://4.bp.blogspot.com/-06SK8POTw_A/Vp3JaIJ0SaI/AAAAAAAAACs/1ZH49AyiJY8/s1600/Doraemon%252Bv01%252Bc02%252B01.jpg"
+          ],
+          "Name": "Chương 2: Thuỷ quái dưới cầu"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "Name": "Hà Thần"
+    },
+    "-OGDP5vNBO-8mEjT-IKY": {
+      "Category": "Horror",
+      "Chapters": [
+        {
+          "Links": [
+            "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg"
+          ],
+          "Name": "Chương 1: Đội vớt xác năm sông"
+        },
+        {
+          "Links": [
+            "http://4.bp.blogspot.com/-06SK8POTw_A/Vp3JaIJ0SaI/AAAAAAAAACs/1ZH49AyiJY8/s1600/Doraemon%252Bv01%252Bc02%252B01.jpg"
+          ],
+          "Name": "Chương 2: Thuỷ quái dưới cầu"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "Name": "Hà Thần"
+    },
+    "-OGDPcdE_IJDZe2PrGN3": {
+      "Category": "Comedy,Adventure",
+      "Chapters": [
+        {
+          "Links": [
+            "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg",
+            "http://4.bp.blogspot.com/-FTBemg84MOc/Vp2-JO6Cm3I/AAAAAAAAAAM/370fuoFgGYM/s1600/Doraemon%252Bv01%252Bc01%252B%252B02.jpg"
+          ],
+          "Name": "Vol.1 Chapter 1 : All The Way From A Future World"
+        },
+        {
+          "Links": [
+            "http://4.bp.blogspot.com/-06SK8POTw_A/Vp3JaIJ0SaI/AAAAAAAAACs/1ZH49AyiJY8/s1600/Doraemon%252Bv01%252Bc02%252B01.jpg"
+          ],
+          "Name": "Vol 0 chapter 1.1"
+        }
+      ],
+      "Image": "https://file.nhasachmienphi.com/jpg/nhasachmienphi-truyen-tranh-doremon-333102-0.jpg",
+      "Name": "Doraemon"
+    },
+    "-OGDRXBD-RHw9L-xgReK": {
+      "Category": "Horror",
+      "Chapters": [
+        {
+          "Links": [
+            "http://1.bp.blogspot.com/-85z8C-NxWu8/Vp2-JUlA3SI/AAAAAAAAAAU/1IaqwQaHme0/s1600/Doraemon%252Bv01%252Bc01%252B%252B01.jpg"
+          ],
+          "Name": "Chương 1: Đội vớt xác năm sông"
+        },
+        {
+          "Links": [
+            "http://4.bp.blogspot.com/-06SK8POTw_A/Vp3JaIJ0SaI/AAAAAAAAACs/1ZH49AyiJY8/s1600/Doraemon%252Bv01%252Bc02%252B01.jpg"
+          ],
+          "Name": "Chương 2: Thuỷ quái dưới cầu"
+        }
+      ],
+      "Image": "https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-ha-than.jpg",
+      "Name": "Hà Thần"
     }
   }
 }
