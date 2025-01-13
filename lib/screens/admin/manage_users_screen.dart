@@ -14,6 +14,70 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   late final ManageUsersController _usersController;
   late Future<List<User>> _usersFuture;
 
+  void _showEditUserDialog(BuildContext context, User user) {
+    final nameController = TextEditingController(text: user.name);
+    final emailController = TextEditingController(text: user.email);
+    final roleController = TextEditingController(text: user.role.toString());
+    final avatarController = TextEditingController(text: user.avatar);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit User'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                ),
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                ),
+                TextField(
+                  controller: roleController,
+                  decoration: const InputDecoration(labelText: 'Role'),
+                  keyboardType: TextInputType.number,
+                ),
+                TextField(
+                  controller: avatarController,
+                  decoration: const InputDecoration(labelText: 'Avatar URL'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final updatedData = {
+                  'name': nameController.text.trim(),
+                  'email': emailController.text.trim(),
+                  'role': int.tryParse(roleController.text.trim()) ?? user.role,
+                  'avatar': avatarController.text.trim(),
+                };
+
+                await _usersController.updateUser(user.id, updatedData);
+                setState(() {
+                  _usersFuture = _usersController.fetchAllUsers();
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -60,7 +124,9 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
                   subtitle: Text(user.email),
                   trailing: PopupMenuButton<String>(
                     onSelected: (value) {
-                      if (value == 'delete') {
+                      if (value == 'edit') {
+                        _showEditUserDialog(context, user);
+                      } else if (value == 'delete') {
                         _usersController.deleteUser(user.id).then((_) {
                           setState(() {
                             _usersFuture = _usersController.fetchAllUsers();
@@ -79,17 +145,12 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
                       ),
                     ],
                   ),
+
                 );
               },
             );
           }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Thêm chức năng thêm người dùng tại đây
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }
