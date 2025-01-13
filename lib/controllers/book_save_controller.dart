@@ -1,56 +1,61 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:book_app/models/book.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class BookSaveController {
   final FirebaseDatabase _database;
 
   BookSaveController(this._database);
 
-  // Lưu sách vào Firebase Database
-  Future<void> saveBook(Book book) async {
+  // Lưu sách vào danh sách đã lưu của người dùng
+  Future<void> saveBook(Book book, String userId) async {
     try {
-      final bookRef = _database.ref().child('savedBooks').push();  // Tạo ID tự động
-      await bookRef.set(book.toMap());  // Lưu book vào Firebase
+      final userRef = _database.ref().child('users').child(userId);
+      final snapshot = await userRef.get();
+      if (snapshot.exists) {
+        final currentData = Map<String, dynamic>.from(snapshot.value as Map);
+        final savedBooks = currentData['saveBooks']?.split(',') ?? [];
+        if (!savedBooks.contains(book.id)) {
+          savedBooks.add(book.id!);
+          await userRef.update({'saveBooks': savedBooks.join(',')});
+        }
+      }
     } catch (e) {
       print('Error saving book: $e');
       rethrow;
     }
   }
 
-  // Xóa sách khỏi Firebase Database
-  Future<void> removeBook(String bookId) async {
+  // Xóa sách khỏi danh sách đã lưu
+  Future<void> removeBook(String bookId, String userId) async {
     try {
-      final ref = _database.ref().child('savedBooks').orderByChild('id').equalTo(bookId);
-      final snapshot = await ref.get();
-
+      final userRef = _database.ref().child('users').child(userId);
+      final snapshot = await userRef.get();
       if (snapshot.exists) {
-        snapshot.children.forEach((child) {
-          child.ref.remove(); // Xóa sách khỏi Firebase
-        });
-      } else {
-        throw Exception("Sách không tồn tại");
+        final currentData = Map<String, dynamic>.from(snapshot.value as Map);
+        final savedBooks = currentData['saveBooks']?.split(',') ?? [];
+        if (savedBooks.contains(bookId)) {
+          savedBooks.remove(bookId);
+          await userRef.update({'saveBooks': savedBooks.join(',')});
+        }
       }
     } catch (e) {
-      print('Failed to remove book: $e');
-      throw Exception('Failed to remove book: $e');
+      print('Error removing book: $e');
+      rethrow;
     }
   }
 
-
-
-  // Lấy danh sách sách đã lưu từ Firebase Database
-  Future<List<Book>> fetchSavedBooks() async {
+  // Lấy thông tin sách từ ID
+  Future<Book> fetchBookById(String bookId) async {
     try {
-      final snapshot = await _database.ref().child('savedBooks').get();
+      final bookRef = _database.ref().child('books').child(bookId);
+      final snapshot = await bookRef.get();
       if (snapshot.exists) {
-        Map<dynamic, dynamic> booksMap = snapshot.value as Map<dynamic, dynamic>;
-        return booksMap.values
-            .map((bookData) => Book.fromMap(Map<String, dynamic>.from(bookData)))
-            .toList();
+        return Book.fromMap(Map<String, dynamic>.from(snapshot.value as Map));
+      } else {
+        throw Exception('Book not found');
       }
-      return [];
     } catch (e) {
-      print('Error fetching saved books: $e');
+      print('Error fetching book: $e');
       rethrow;
     }
   }
