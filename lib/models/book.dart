@@ -1,40 +1,19 @@
 class Book {
-  String? id, category, name, image, description;
+  String? id;
+  String? category;
+  String? name;
+  String? image;
+  String? description; // Thêm thuộc tính này
   List<Chapter>? chapters;
 
   Book({this.id, this.category, this.name, this.image, this.description, this.chapters});
 
-
-  // Chuyển từ map
-  factory Book.fromMap(Map<String, dynamic> map) {
-    return Book(
-      id: map['id'],
-      name: map['name'],
-      category: map['category'],
-      image: map['image'],
-      description: map['description'],
-    );
-  }
-
-  // Chuyển thành map để lưu vào Firebase
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'category': category,
-      'image': image,
-      'description': description,
-    };
-  }
-
-  // Sửa lại fromJson để nhận 1 tham số duy nhất
   Book.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     category = json['Category'];
     name = json['Name'];
     image = json['Image'];
-    description = json['Description'];
-
+    description = json['Description']; // Đọc từ JSON
     if (json['Chapters'] != null) {
       chapters = (json['Chapters'] as List)
           .map((e) => Chapter.fromJson(Map<String, dynamic>.from(e)))
@@ -48,11 +27,20 @@ class Book {
     data['Category'] = category;
     data['Name'] = name;
     data['Image'] = image;
-    data['Description'] = description;
+    data['Description'] = description; // Ghi vào JSON
     if (chapters != null) {
       data['Chapters'] = chapters!.map((v) => v.toJson()).toList();
     }
     return data;
+  }
+
+  Book copyWith({String? id, String? name, String? category, String? image}) {
+    return Book(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      category: category ?? this.category,
+      image: image ?? this.image,
+    );
   }
 }
 
@@ -74,6 +62,3 @@ class Chapter {
     return data;
   }
 }
-
-
-
