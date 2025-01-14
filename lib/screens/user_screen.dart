@@ -9,7 +9,8 @@ import '../models/user.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
   final User? user;  // Nhận thông tin người dùng từ BaseScreen
-  const UserScreen({super.key, this.user});
+
+  const UserScreen({super.key,this.user});
 
   @override
   _UserScreenState createState() => _UserScreenState();
@@ -18,29 +19,50 @@ class UserScreen extends ConsumerStatefulWidget {
 class _UserScreenState extends ConsumerState<UserScreen> {
   late User? _user;
 
+
   @override
   void initState() {
     super.initState();
-    _user = widget.user; // Truyền user vào ngay từ lúc bắt đầu
+
+    // Kiểm tra xem có user từ widget.user không, nếu có thì không cần fetch lại từ Firebase
+    if (widget.user != null) {
+      _userFuture = Future.value(widget.user); // Đặt user đã truyền vào làm giá trị của Future
+    } else {
+      final database = FirebaseDatabase.instanceFor(app: Firebase.app());
+      final userController = UserController(database);
+      _userFuture = userController.fetchCurrentUserData(); // Fetch lại nếu không có user
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffffffff),
-      body: _user == null
-          ? const Center(child: CircularProgressIndicator()) // Nếu không có user, hiển thị loading
-          : ListView(
-        padding: const EdgeInsets.all(12),
-        physics: const BouncingScrollPhysics(),
-        children: [
-          Container(height: 35),
-          userTile(_user!),
-          divider(),
-          colorTiles(),
-          divider(),
-          bwTitles(context), // Truyền context vào bwTitles
-        ],
+      body: FutureBuilder<User?>(
+        future: _userFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData && snapshot.data != null) {
+            User user = snapshot.data!;
+            return ListView(
+              padding: const EdgeInsets.all(12),
+              physics: const BouncingScrollPhysics(),
+              children: [
+                Container(height: 35),
+                userTile(user),
+                divider(),
+                colorTiles(),
+                divider(),
+                bwTitles(context), // Truyền context vào bwTitles
+              ],
+            );
+          } else {
+            return const Center(child: Text('No user data available.'));
+          }
+        },
       ),
     );
   }
@@ -131,17 +153,23 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   }
 
   void _navigateToProfileEditScreen(BuildContext context) {
-    if (_user != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProfileEditScreen(user: _user!), // Truyền user vào màn hình chỉnh sửa
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No user data available.')),
-      );
-    }
+
+    final userController = UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
+
+    _userFuture.then((user) {
+      if (user != null) {
+        // Điều hướng đến màn hình chỉnh sửa, truyền dữ liệu người dùng qua constructor.
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfileEditScreen(user: user), // Truyền user vào màn hình chỉnh sửa
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No user data available.')),
+        );
+      }
+    });
   }
 }

@@ -1,17 +1,21 @@
 import 'package:book_app/screens/admin/admin_screen.dart';
+import 'package:book_app/screens/category_screen.dart';
+import 'package:book_app/screens/home_screen.dart';
+import 'package:book_app/screens/user_screen.dart';
+import 'package:book_app/widgets/footer.dart';
+import 'package:book_app/widgets/header.dart';
 import 'package:flutter/material.dart';
+
+
 import 'models/user.dart';
-import 'screens/home_screen.dart';
-import 'screens/user_screen.dart';
-import 'screens/category_screen.dart';
-import 'widgets/footer.dart';
-import 'widgets/header.dart';
 
 class BaseScreen extends StatefulWidget {
   final int selectedIndex;
-  final User? user;
+  final User? user;  // Thêm tham số user để truyền dữ liệu người dùng
 
-  BaseScreen({super.key, this.selectedIndex = 0, this.user});
+  const BaseScreen({super.key, this.selectedIndex = 0, this.user});
+
+
 
   @override
   State<BaseScreen> createState() => _BaseScreenState();
@@ -24,7 +28,9 @@ class _BaseScreenState extends State<BaseScreen> {
     const HomeScreen(),
     const CategoryScreen(),
     const AdminScreen(),
-    UserScreen(), // Sửa: Không cần phải thêm UserScreen vào danh sách trước
+
+    UserScreen(),  // Sử dụng UserScreen để hiển thị thông tin người dùng
+
   ];
 
   @override
