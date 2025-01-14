@@ -7,6 +7,8 @@ import 'package:book_app/screens/admin/admin_screen.dart';
 
 import '../models/user.dart'; // Import LoginController
 
+import '../models/user.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 

@@ -3,11 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../controllers/user_controller.dart';
 import '../models/user.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
   final User? user;  // Nhận thông tin người dùng từ BaseScreen
+
   const UserScreen({super.key,this.user});
 
   @override
@@ -15,7 +17,7 @@ class UserScreen extends ConsumerStatefulWidget {
 }
 
 class _UserScreenState extends ConsumerState<UserScreen> {
-  late Future<User?> _userFuture;
+  late User? _user;
 
 
   @override
@@ -65,7 +67,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     );
   }
 
-  // Hiển thị thông tin user từ Firebase
+  // Hiển thị thông tin user
   Widget userTile(User user) {
     return ListTile(
       leading: CircleAvatar(
@@ -134,7 +136,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         fontWeight: FontWeight.w500,
       ),
       trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black, size: 20),
-      onTap: onTap, // Chuyển onTap vào đây
+      onTap: onTap,
     );
   }
 
@@ -151,6 +153,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   }
 
   void _navigateToProfileEditScreen(BuildContext context) {
+
     final userController = UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
 
     _userFuture.then((user) {
