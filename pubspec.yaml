@@ -23,6 +23,8 @@ dependencies:
   mobile_scanner: ^6.0.2
   pretty_qr_code: ^3.3.0
   http: ^1.2.2
+  googleapis_auth: ^1.4.0
+  flutter_keyboard_visibility: ^6.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,6 @@
 import 'package:book_app/screens/admin/admin_screen.dart';
+import 'package:book_app/screens/chat_bot_screen.dart';
+import 'package:book_app/widgets/icon_chat_bot.dart';
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/user_screen.dart';
@@ -40,10 +42,31 @@ class _BaseScreenState extends State<BaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const HeaderWithSearch(),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      appBar: const HeaderWithSearch(), // Header cố định
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                left: BorderSide(width: 2.0, color: Colors.black12),
+                right: BorderSide(width: 2.0, color: Colors.black12),
+              ),
+            ),
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _screens,
+            ),
+          ),
+          // Icon Chatbot Floating
+          FloatingChatbotIcon(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ChatScreen()),
+              );
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: Footer(
         selectedIndex: _currentIndex,

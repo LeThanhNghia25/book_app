@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:book_app/screens/admin/admin_screen.dart';
 import 'package:book_app/screens/book_details_screen.dart';
 import 'package:book_app/screens/chapter_screen.dart';
+import 'package:book_app/screens/chat_bot_screen.dart';
 import 'package:book_app/screens/login_screen.dart';
 import 'package:book_app/screens/saved_articles_screen.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/chapters': (context) => const ChapterScreen(),
         '/admin': (context) => const AdminScreen(),
         '/savedArticles': (context) => const SavedArticlesScreen(),
+        '/chat': (context) => const ChatScreen(), // Định tuyến cho ChatScreen
       },
       onUnknownRoute: (settings) => MaterialPageRoute(
         builder: (context) => const Scaffold(
