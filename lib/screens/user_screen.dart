@@ -17,7 +17,6 @@ class UserScreen extends ConsumerStatefulWidget {
 class _UserScreenState extends ConsumerState<UserScreen> {
   late Future<User?> _userFuture;
 
-
   @override
   void initState() {
     super.initState();
@@ -30,6 +29,92 @@ class _UserScreenState extends ConsumerState<UserScreen> {
       final userController = UserController(database);
       _userFuture = userController.fetchCurrentUserData(); // Fetch lại nếu không có user
     }
+  }
+
+  // Hàm hiển thị hộp thoại chỉnh sửa thông tin người dùng
+  void _showEditUserDialog(BuildContext context, User user) {
+    final nameController = TextEditingController(text: user.name);
+    final emailController = TextEditingController(text: user.email);
+    final passwordController = TextEditingController(text: ''); // Khởi tạo mật khẩu trống
+    final avatarController = TextEditingController(text: user.avatar);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Chỉnh sửa người dùng'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Tên'),
+                ),
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                ),
+                TextField(
+                  controller: passwordController,
+                  decoration: const InputDecoration(labelText: 'Mật khẩu'),
+                  obscureText: true,
+                ),
+                TextField(
+                  controller: avatarController,
+                  decoration: const InputDecoration(labelText: 'URL Avatar'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Đóng hộp thoại mà không lưu thay đổi
+              },
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                // Thu thập dữ liệu từ các TextField
+                final updatedData = {
+                  'name': nameController.text.trim(),
+                  'email': emailController.text.trim(),
+                  'password': passwordController.text.trim(),
+                  'avatar': avatarController.text.trim(),
+                };
+
+                try {
+                  // Cập nhật thông tin người dùng lên Firebase
+                  final database = FirebaseDatabase.instanceFor(app: Firebase.app());
+                  final userController = UserController(database);
+                  await userController.updateUser(user.id, updatedData);
+
+                  // Cập nhật lại Future để màn hình chính tự làm mới
+                  setState(() {
+                    _userFuture = userController.fetchCurrentUserData();
+                  });
+
+                  // Đóng hộp thoại
+                  Navigator.pop(context);
+
+                  // Hiển thị thông báo thành công (không bắt buộc)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Cập nhật thông tin thành công!')),
+                  );
+                } catch (e) {
+                  // Xử lý lỗi nếu cập nhật thất bại
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Cập nhật thất bại: $e')),
+                  );
+                }
+              },
+              child: const Text('Lưu'),
+            ),
+
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -52,7 +137,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                 Container(height: 35),
                 userTile(user),
                 divider(),
-                colorTiles(),
+                colorTiles(user),
                 divider(),
                 bwTitles(context), // Truyền context vào bwTitles
               ],
@@ -91,11 +176,11 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     );
   }
 
-  Widget colorTiles() {
+  Widget colorTiles(User user) {
     return Column(
       children: [
         colorTile(Icons.person_outline, Colors.deepPurple, "Chỉnh sửa thông tin người dùng",
-            onTap: () => _navigateToProfileEditScreen(context)),
+            onTap: () => _showEditUserDialog(context,user )), // Sửa tại đây
         colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt"),
         colorTile(Icons.bookmark_border, Colors.pink, "Lưu bài viết"),
         colorTile(Icons.favorite_border, Colors.orange, "Referral code"),
@@ -148,25 +233,5 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   void logout(BuildContext context) {
     final userController = UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
     userController.logout(context); // Gọi phương thức logout từ UserController
-  }
-
-  void _navigateToProfileEditScreen(BuildContext context) {
-    final userController = UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
-
-    _userFuture.then((user) {
-      if (user != null) {
-        // Điều hướng đến màn hình chỉnh sửa, truyền dữ liệu người dùng qua constructor.
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProfileEditScreen(user: user), // Truyền user vào màn hình chỉnh sửa
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No user data available.')),
-        );
-      }
-    });
   }
 }
