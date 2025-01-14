@@ -1,16 +1,9 @@
 import 'package:book_app/models/book.dart';
-import 'package:book_app/controllers/book_save_controller.dart';
+import 'package:book_app/screens/book_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/book_providers.dart';
 import '../state/state_manager.dart';
-import 'book_details_screen.dart';
-
-// Provider để tải danh sách sách đã lưu
-final fetchSavedBooksProvider = FutureProvider<List<Book>>((ref) async {
-  final bookSaveController = ref.read(bookSaveControllerProvider);
-  return await bookSaveController.fetchSavedBooks();
-});
 
 class SavedArticlesScreen extends ConsumerWidget {
   const SavedArticlesScreen({super.key});
@@ -21,17 +14,8 @@ class SavedArticlesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Sách đã lưu'),
         backgroundColor: const Color(0xFFF44A3E),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Center(
-          child: Text(
-            'Lưu Sách',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
       ),
       body: savedBooksAsync.when(
         data: (savedBooks) {
@@ -39,58 +23,62 @@ class SavedArticlesScreen extends ConsumerWidget {
             return const Center(child: Text('Không có sách đã lưu.'));
           }
 
-          return GridView.builder(
-            padding: const EdgeInsets.all(8),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 0.7,
-            ),
+          return ListView.builder(
             itemCount: savedBooks.length,
             itemBuilder: (context, index) {
               final book = savedBooks[index];
-              return GestureDetector(
+
+              // Sử dụng `StateProvider` cho trạng thái bookmark của từng cuốn sách
+              final isBookmarked = ref.watch(isBookmarkedProvider(book.id!));
+
+              return ListTile(
+                title: Text(book.name ?? 'Không có tiêu đề'),
+                subtitle: Text(book.category ?? 'Không có danh mục'),
+                trailing: IconButton(
+                  icon: Icon(
+                    isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                    color: isBookmarked ? Colors.yellow : Colors.grey,
+                  ),
+                  onPressed: () async {
+                    final bookSaveController = ref.read(bookSaveControllerProvider);
+                    try {
+                      if (isBookmarked) {
+                        // Nếu sách đã được lưu, hủy lưu
+                        await bookSaveController.removeBook(book.id!, ref.read(userIdProvider));
+                        ref.read(isBookmarkedProvider(book.id!).notifier).state = false;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Đã hủy lưu sách: ${book.name}')),
+                        );
+                      } else {
+                        // Nếu sách chưa được lưu, lưu lại
+                        await bookSaveController.saveBook(book, ref.read(userIdProvider));
+                        ref.read(isBookmarkedProvider(book.id!).notifier).state = true;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Đã lưu sách: ${book.name}')),
+                        );
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Lỗi khi lưu sách: $e')),
+                      );
+                    }
+                    ref.refresh(fetchSavedBooksProvider); // Làm mới danh sách sách đã lưu
+                  },
+                ),
                 onTap: () {
                   ref.read(selectedBookProvider.notifier).state = book;
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const BookDetails(),
-                    ),
+                    MaterialPageRoute(builder: (context) => const BookDetails()),
                   );
                 },
-                child: Card(
-                  elevation: 8,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Image.network(
-                          book.image ?? 'https://via.placeholder.com/150',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          book.name ?? "Không có tiêu đề",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               );
             },
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(child: Text('Lỗi: $error')),
+        error: (error, stack) => Center(child: Text('Lỗi: $error')),
       ),
     );
   }
 }
-
