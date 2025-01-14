@@ -1,8 +1,8 @@
 class Book {
-  String? id, category, name, image;
+  String? id, category, name, image, description;
   List<Chapter>? chapters;
 
-  Book({this.id, this.category, this.name, this.image, this.chapters});
+  Book({this.id, this.category, this.name, this.image, this.description, this.chapters});
 
 
   // Chuyển từ map
@@ -12,6 +12,7 @@ class Book {
       name: map['name'],
       category: map['category'],
       image: map['image'],
+      description: map['description'],
     );
   }
 
@@ -22,6 +23,7 @@ class Book {
       'name': name,
       'category': category,
       'image': image,
+      'description': description,
     };
   }
 
@@ -31,6 +33,7 @@ class Book {
     category = json['Category'];
     name = json['Name'];
     image = json['Image'];
+    description = json['Description'];
 
     if (json['Chapters'] != null) {
       chapters = (json['Chapters'] as List)
@@ -45,6 +48,7 @@ class Book {
     data['Category'] = category;
     data['Name'] = name;
     data['Image'] = image;
+    data['Description'] = description;
     if (chapters != null) {
       data['Chapters'] = chapters!.map((v) => v.toJson()).toList();
     }
