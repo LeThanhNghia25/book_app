@@ -36,8 +36,27 @@ class ManageBooksController {
   }
 
   // Thêm sách mới
-  Future<void> addBook(Book book) async {
-    final newBookRef = _bookRef.push();
-    await newBookRef.set(book.toJson());
+  Future<void> addBookAutoId(Book book) async {
+    // Lấy tất cả các key hiện tại
+    final snapshot = await _bookRef.get();
+
+    String newKey = "book1"; // Giá trị mặc định nếu chưa có sách nào
+    if (snapshot.exists && snapshot.value is Map) {
+      final booksMap = snapshot.value as Map<dynamic, dynamic>;
+
+      // Tìm id lớn nhất trong các key hiện tại
+      final maxId = booksMap.keys
+          .where((key) => key.toString().startsWith("book"))
+          .map((key) => int.tryParse(key.toString().substring(4)) ?? 0)
+          .fold(0, (prev, next) => next > prev ? next : prev);
+
+      // Tạo key mới
+      newKey = "book${maxId + 1}";
+    }
+
+    // Lưu sách mới với key mới
+    await _bookRef.child(newKey).set(book.toJson());
   }
+
+
 }
