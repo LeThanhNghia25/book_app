@@ -144,10 +144,10 @@ class BookDetails extends ConsumerWidget {
                         style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      // Text(
-                      //   book.description ?? 'Không có mô tả',
-                      //   style: const TextStyle(fontSize: 17),
-                      // ),
+                      Text(
+                        book.description ?? 'Không có mô tả',
+                        style: const TextStyle(fontSize: 17),
+                      ),
                     ],
                   ),
                 ),
@@ -159,6 +159,7 @@ class BookDetails extends ConsumerWidget {
                     'Có thể bạn quan tâm',
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                   ),
+
                 ),
               ],
             ),
