@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'manage_users_screen.dart';
 import 'manage_books_screen.dart';
+import 'package:book_app/base_screen.dart';
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
@@ -33,7 +34,8 @@ class AdminScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ManageUsersScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ManageUsersScreen()),
                 );
               },
             ),
@@ -47,7 +49,24 @@ class AdminScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ManageBooksScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ManageBooksScreen()),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            elevation: 4,
+            child: ListTile(
+              leading: const Icon(Icons.home, color: Colors.red),
+              title: const Text('Trang chủ'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          BaseScreen(selectedIndex: 0)), // Chọn tab HomeScreen
                 );
               },
             ),
