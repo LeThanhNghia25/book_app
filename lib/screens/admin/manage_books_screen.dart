@@ -24,9 +24,11 @@ class _ManageBooksScreenState extends State<ManageBooksScreen> {
 
   // Hiển thị dialog để chỉnh sửa hoặc thêm sách
   void _showBookDialog({Book? book}) {
-    final nameController = TextEditingController(text: book?.name);
-    final categoryController = TextEditingController(text: book?.category);
-    final imageController = TextEditingController(text: book?.image);
+    final nameController = TextEditingController(text: book?.name ?? '');
+    final categoryController = TextEditingController(text: book?.category ?? '');
+    final imageController = TextEditingController(text: book?.image ?? '');
+    final descriptionController =
+    TextEditingController(text: book?.description ?? '');
 
     showDialog(
       context: context,
@@ -48,6 +50,11 @@ class _ManageBooksScreenState extends State<ManageBooksScreen> {
                 controller: imageController,
                 decoration: const InputDecoration(labelText: 'Ảnh bìa (URL)'),
               ),
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(labelText: 'Mô tả sách'),
+                maxLines: 3,
+              ),
             ],
           ),
           actions: [
@@ -56,36 +63,39 @@ class _ManageBooksScreenState extends State<ManageBooksScreen> {
               child: const Text('Hủy'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 final updatedData = {
-                  'Name': nameController.text,
-                  'Category': categoryController.text,
-                  'Image': imageController.text,
+                  'Name': nameController.text.trim(),
+                  'Category': categoryController.text.trim(),
+                  'Image': imageController.text.trim(),
+                  'Description': descriptionController.text.trim(),
                 };
 
-                if (book == null) {
-                  // Thêm sách mới
-                  final newBook = Book(
-                    id: '',
-                    name: updatedData['Name'],
-                    category: updatedData['Category'],
-                    image: updatedData['Image'],
-                  );
-                  _booksController.addBook(newBook).then((_) {
-                    setState(() {
-                      _booksFuture = _booksController.fetchAllBooks();
-                    });
-                  });
-                } else {
-                  // Cập nhật sách
-                  _booksController.updateBook(book.id!, updatedData).then((_) {
-                    setState(() {
-                      _booksFuture = _booksController.fetchAllBooks();
-                    });
-                  });
-                }
+                try {
+                  if (book == null) {
+                    // Thêm sách mới
+                    final newBook = Book(
+                      name: updatedData['Name'],
+                      category: updatedData['Category'],
+                      image: updatedData['Image'],
+                      description: updatedData['Description'],
+                    );
+                    await _booksController.addBookAutoId(newBook);
+                  } else {
+                    // Cập nhật sách
+                    await _booksController.updateBook(book.id!, updatedData);
+                  }
 
-                Navigator.pop(context);
+                  setState(() {
+                    _booksFuture = _booksController.fetchAllBooks();
+                  });
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Lỗi: ${e.toString()}')),
+                  );
+                } finally {
+                  Navigator.pop(context);
+                }
               },
               child: const Text('Lưu'),
             ),
