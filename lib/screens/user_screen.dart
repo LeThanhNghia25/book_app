@@ -7,35 +7,44 @@ import '../controllers/user_controller.dart';
 import '../models/user.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
-  final User? user;  // Nhận thông tin người dùng từ BaseScreen
-  const UserScreen({super.key,this.user});
+  final User? user; // Nhận thông tin người dùng từ BaseScreen
+  const UserScreen({super.key, this.user});
 
   @override
   _UserScreenState createState() => _UserScreenState();
 }
 
 class _UserScreenState extends ConsumerState<UserScreen> {
-  late Future<User?> _userFuture;
+  late User? _user;
+  late Future<void> _userFuture;
 
   @override
   void initState() {
     super.initState();
 
-    // Kiểm tra xem có user từ widget.user không, nếu có thì không cần fetch lại từ Firebase
     if (widget.user != null) {
-      _userFuture = Future.value(widget.user); // Đặt user đã truyền vào làm giá trị của Future
+      _user = widget.user;
+      _userFuture = Future.value(); // Không fetch lại
+      print("User passed from BaseScreen: $_user"); // Debug print
     } else {
       final database = FirebaseDatabase.instanceFor(app: Firebase.app());
       final userController = UserController(database);
-      _userFuture = userController.fetchCurrentUserData(); // Fetch lại nếu không có user
+
+      _userFuture = userController.fetchCurrentUserData().then((user) {
+        print("Fetched user data: $user"); // Debug print
+        setState(() {
+          _user = user;
+        });
+      }).catchError((e) {
+        print("Error fetching user data: $e"); // Debug print
+      });
     }
   }
 
-  // Hàm hiển thị hộp thoại chỉnh sửa thông tin người dùng
   void _showEditUserDialog(BuildContext context, User user) {
     final nameController = TextEditingController(text: user.name);
     final emailController = TextEditingController(text: user.email);
-    final passwordController = TextEditingController(text: ''); // Khởi tạo mật khẩu trống
+    final passwordController = TextEditingController();
     final avatarController = TextEditingController(text: user.avatar);
 
     showDialog(
@@ -68,41 +77,40 @@ class _UserScreenState extends ConsumerState<UserScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Đóng hộp thoại mà không lưu thay đổi
-              },
+              onPressed: () => Navigator.pop(context),
               child: const Text('Hủy'),
             ),
             ElevatedButton(
               onPressed: () async {
-                // Thu thập dữ liệu từ các TextField
                 final updatedData = {
                   'name': nameController.text.trim(),
                   'email': emailController.text.trim(),
-                  'password': passwordController.text.trim(),
                   'avatar': avatarController.text.trim(),
                 };
 
+                if (passwordController.text.trim().isNotEmpty) {
+                  updatedData['password'] = passwordController.text.trim();
+                }
+
                 try {
-                  // Cập nhật thông tin người dùng lên Firebase
                   final database = FirebaseDatabase.instanceFor(app: Firebase.app());
                   final userController = UserController(database);
-                  await userController.updateUser(user.id, updatedData);
 
-                  // Cập nhật lại Future để màn hình chính tự làm mới
-                  setState(() {
-                    _userFuture = userController.fetchCurrentUserData();
-                  });
+                  // Cập nhật thông tin người dùng và lấy lại thông tin người dùng mới
+                  final updatedUser = await userController.updateUser(user.id, updatedData);
 
-                  // Đóng hộp thoại
+                  if (updatedUser != null) {
+                    setState(() {
+                      _user = updatedUser; // Cập nhật _user với dữ liệu mới
+                    });
+                  }
+
                   Navigator.pop(context);
-
-                  // Hiển thị thông báo thành công (không bắt buộc)
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Cập nhật thông tin thành công!')),
                   );
                 } catch (e) {
-                  // Xử lý lỗi nếu cập nhật thất bại
+                  Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Cập nhật thất bại: $e')),
                   );
@@ -110,7 +118,6 @@ class _UserScreenState extends ConsumerState<UserScreen> {
               },
               child: const Text('Lưu'),
             ),
-
           ],
         );
       },
@@ -121,36 +128,42 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffffffff),
-      body: FutureBuilder<User?>(
+      body: FutureBuilder<void>(
         future: _userFuture,
         builder: (context, snapshot) {
+          print("FutureBuilder state: ${snapshot.connectionState}"); // Debug print
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
+            print("FutureBuilder error: ${snapshot.error}"); // Debug print
             return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData && snapshot.data != null) {
-            User user = snapshot.data!;
-            return ListView(
-              padding: const EdgeInsets.all(12),
-              physics: const BouncingScrollPhysics(),
-              children: [
-                Container(height: 35),
-                userTile(user),
-                divider(),
-                colorTiles(user),
-                divider(),
-                bwTitles(context), // Truyền context vào bwTitles
-              ],
-            );
-          } else {
+          } else if (_user == null) {
+            print("No user data available"); // Debug print
             return const Center(child: Text('No user data available.'));
           }
+
+          print("Displaying user data: $_user"); // Debug print
+          return _buildUserContent(_user!);
         },
       ),
     );
   }
 
-  // Hiển thị thông tin user từ Firebase
+  Widget _buildUserContent(User user) {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      physics: const BouncingScrollPhysics(),
+      children: [
+        Container(height: 35),
+        userTile(user),
+        divider(),
+        colorTiles(user),
+        divider(),
+        bwTitles(context),
+      ],
+    );
+  }
+
   Widget userTile(User user) {
     return ListTile(
       leading: CircleAvatar(
@@ -179,8 +192,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   Widget colorTiles(User user) {
     return Column(
       children: [
-        colorTile(Icons.person_outline, Colors.deepPurple, "Chỉnh sửa thông tin người dùng",
-            onTap: () => _showEditUserDialog(context,user )), // Sửa tại đây
+        colorTile(Icons.person_outline, Colors.deepPurple,
+            "Chỉnh sửa thông tin người dùng",
+            onTap: () => _showEditUserDialog(context, user)),
         colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt"),
         colorTile(Icons.bookmark_border, Colors.pink, "Lưu bài viết"),
         colorTile(Icons.favorite_border, Colors.orange, "Referral code"),
@@ -199,7 +213,8 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   }
 
   Widget bwTitle(IconData icon, String text, {void Function()? onTap}) {
-    return colorTile(icon, Colors.black, text, blackAndWhite: true, onTap: onTap);
+    return colorTile(icon, Colors.black, text,
+        blackAndWhite: true, onTap: onTap);
   }
 
   Widget colorTile(IconData icon, Color color, String text,
@@ -209,7 +224,8 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         height: 45,
         width: 45,
         decoration: BoxDecoration(
-          color: blackAndWhite ? const Color(0xfff3f4fe) : color.withOpacity(0.09),
+          color:
+              blackAndWhite ? const Color(0xfff3f4fe) : color.withOpacity(0.09),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Icon(icon, color: color),
@@ -218,8 +234,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         text: text,
         fontWeight: FontWeight.w500,
       ),
-      trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black, size: 20),
-      onTap: onTap, // Chuyển onTap vào đây
+      trailing:
+          const Icon(Icons.arrow_forward_ios, color: Colors.black, size: 20),
+      onTap: onTap,
     );
   }
 
@@ -231,7 +248,8 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   }
 
   void logout(BuildContext context) {
-    final userController = UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
-    userController.logout(context); // Gọi phương thức logout từ UserController
+    final userController =
+        UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
+    userController.logout(context);
   }
 }
