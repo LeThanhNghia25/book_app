@@ -5,34 +5,33 @@ class LoginController {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
 
   // Hàm đăng nhập
-  Future<bool> login(String email, String password) async {
-    // Truy vấn dữ liệu người dùng từ Firebase
+  Future<int?> login(String email, String password) async {
     final usersRef = _database.ref('Users');
 
     try {
-      // Lấy dữ liệu người dùng theo email
       final userSnapshot = await usersRef.get();
 
       if (userSnapshot.exists) {
         Map<String, dynamic> users = Map.from(userSnapshot.value as Map);
 
-        // Duyệt qua tất cả người dùng để kiểm tra thông tin đăng nhập
         for (var userId in users.keys) {
           final user = users[userId];
 
-          // Kiểm tra email và mật khẩu
           if (user['email'] == email && user['password'] == password) {
-            // Đăng nhập thành công
-            return true;
+            // Kiểm tra role hợp lệ
+            if (user.containsKey('role')) {
+              return user['role']; // Trả về vai trò của người dùng (0 hoặc 1)
+            } else {
+              return null; // Không tìm thấy role
+            }
           }
         }
       }
 
-      // Nếu không tìm thấy thông tin đăng nhập hợp lệ
-      return false;
+      return null; // Không tìm thấy người dùng hoặc thông tin không hợp lệ
     } catch (e) {
       print('Lỗi khi đăng nhập: $e');
-      return false;
+      return null; // Lỗi trong quá trình xử lý
     }
   }
 

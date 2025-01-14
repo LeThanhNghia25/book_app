@@ -9,11 +9,12 @@ import 'widgets/header.dart';
 class BaseScreen extends StatefulWidget {
   final int selectedIndex;
 
-  const BaseScreen({super.key, this.selectedIndex = 0});
+  BaseScreen({super.key, this.selectedIndex = 0});
 
   @override
   State<BaseScreen> createState() => _BaseScreenState();
 }
+
 
 class _BaseScreenState extends State<BaseScreen> {
   int _currentIndex = 0;
