@@ -5,6 +5,8 @@ import 'package:book_app/screens/home_screen.dart';
 import '../controllers/login_controller.dart';
 import 'package:book_app/base_screen.dart';
 
+import '../models/user.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -36,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     int? role = await _loginController.login(email, password);
-
+    User? user = (await _loginController.getUserInfo(email)) as User?;
     if (role != null) {
       if (role == 0) {
         // Vai trò admin
@@ -45,7 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
         // Vai trò người dùng
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => BaseScreen()),
+          MaterialPageRoute(
+            builder: (context) => BaseScreen(user: user),  // Truyền user vào BaseScreen
+          ),
         );
       } else {
         // Trường hợp không xác định

@@ -46,6 +46,11 @@ class RegisterController {
         );
 
         await usersRef.child(newUserId).set(newUser.toJson());
+
+        // Lưu ID vào Firebase Authentication để có thể sử dụng sau này
+        await firebaseUser.updateDisplayName(name);  // Cập nhật tên hiển thị
+        await firebaseUser.updatePhotoURL(newUser.avatar);  // Cập nhật avatar
+        
         _showSnackbar(context, "Đăng ký thành công!");
         return true;
       } else {
