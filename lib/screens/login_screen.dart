@@ -1,7 +1,13 @@
 import 'package:book_app/screens/register_sreen.dart';
+import 'package:book_app/screens/user_screen.dart';
 import 'package:flutter/material.dart';
 import '../base_screen.dart';
-import 'package:book_app/controllers/login_controller.dart'; // Import LoginController
+import 'package:book_app/controllers/login_controller.dart';
+import 'package:book_app/screens/admin/admin_screen.dart';
+
+import '../models/user.dart'; // Import LoginController
+
+import '../models/user.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final LoginController _loginController = LoginController();
   final FocusNode _emailFocusNode = FocusNode();  // Thêm FocusNode
   final FocusNode _passwordFocusNode = FocusNode();  // Thêm FocusNode
+
   void _handleLogin(BuildContext context) async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
@@ -37,15 +44,26 @@ class _LoginScreenState extends State<LoginScreen> {
     bool isSuccess = await _loginController.login(email, password);
 
     if (isSuccess) {
-      // Sau khi đăng nhập thành công, chuyển đến BaseScreen (màn hình chính có footer và header)
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const BaseScreen()), // Chuyển đến BaseScreen
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.")),
-      );
+      // Sau khi đăng nhập thành công, kiểm tra role
+      User? user = await _loginController.getUserInfo(email);
+      if (user != null) {
+        // Nếu role == 0, chuyển đến AdminScreen, nếu role == 1, chuyển đến UserScreen
+        if (user.role == 0) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AdminScreen()), // Sửa ở đây
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => BaseScreen(user: user)),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.")),
+        );
+      }
     }
   }
 

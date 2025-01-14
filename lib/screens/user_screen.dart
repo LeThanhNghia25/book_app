@@ -1,27 +1,37 @@
+import 'package:book_app/screens/profileEdit_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../controllers/login_controller.dart';
+
 import '../controllers/user_controller.dart';
 import '../models/user.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
-  const UserScreen({super.key});
+  final User? user;  // Nhận thông tin người dùng từ BaseScreen
+
+  const UserScreen({super.key,this.user});
 
   @override
   _UserScreenState createState() => _UserScreenState();
 }
 
 class _UserScreenState extends ConsumerState<UserScreen> {
-  late Future<User?> _userFuture;
+  late User? _user;
+
 
   @override
   void initState() {
     super.initState();
-    final database = FirebaseDatabase.instanceFor(app: Firebase.app());
-    final userController = UserController(database);
-    _userFuture = userController.fetchDefaultUser();
+
+    // Kiểm tra xem có user từ widget.user không, nếu có thì không cần fetch lại từ Firebase
+    if (widget.user != null) {
+      _userFuture = Future.value(widget.user); // Đặt user đã truyền vào làm giá trị của Future
+    } else {
+      final database = FirebaseDatabase.instanceFor(app: Firebase.app());
+      final userController = UserController(database);
+      _userFuture = userController.fetchCurrentUserData(); // Fetch lại nếu không có user
+    }
   }
 
   @override
@@ -46,7 +56,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                 divider(),
                 colorTiles(),
                 divider(),
-                bwTitles(context),  // Truyền context vào bwTitles
+                bwTitles(context), // Truyền context vào bwTitles
               ],
             );
           } else {
@@ -57,11 +67,14 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     );
   }
 
-  // Hiển thị thông tin user từ Firebase
+  // Hiển thị thông tin user
   Widget userTile(User user) {
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: NetworkImage(user.avatar),
+        onBackgroundImageError: (_, __) {
+          // Hiển thị ảnh mặc định nếu ảnh không tải được
+        },
       ),
       title: Txt(
         text: user.name,
@@ -83,8 +96,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   Widget colorTiles() {
     return Column(
       children: [
-        colorTile(Icons.person_outline, Colors.deepPurple, "Chỉnh sửa thông tin người dùng"),
-        colorTile(Icons.settings_outlined, Colors.blue, "Cài đăt"),
+        colorTile(Icons.person_outline, Colors.deepPurple, "Chỉnh sửa thông tin người dùng",
+            onTap: () => _navigateToProfileEditScreen(context)),
+        colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt"),
         colorTile(Icons.bookmark_border, Colors.pink, "Lưu bài viết"),
         colorTile(Icons.favorite_border, Colors.orange, "Referral code"),
       ],
@@ -122,7 +136,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         fontWeight: FontWeight.w500,
       ),
       trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black, size: 20),
-      onTap: onTap, // Chuyển onTap vào đây
+      onTap: onTap,
     );
   }
 
@@ -135,6 +149,27 @@ class _UserScreenState extends ConsumerState<UserScreen> {
 
   void logout(BuildContext context) {
     final userController = UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
-    userController.logout(context);  // Gọi phương thức logout từ UserController
+    userController.logout(context); // Gọi phương thức logout từ UserController
+  }
+
+  void _navigateToProfileEditScreen(BuildContext context) {
+
+    final userController = UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
+
+    _userFuture.then((user) {
+      if (user != null) {
+        // Điều hướng đến màn hình chỉnh sửa, truyền dữ liệu người dùng qua constructor.
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfileEditScreen(user: user), // Truyền user vào màn hình chỉnh sửa
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No user data available.')),
+        );
+      }
+    });
   }
 }
