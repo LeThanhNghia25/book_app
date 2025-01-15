@@ -22,17 +22,13 @@ class BookController {
   }
 
   Future<List<Book>> fetchRandomBooks(int count) async {
-
     final snapshot = await _bookRef.get();
-
     if (!snapshot.exists) {
       return [];
     }
-
     final books = snapshot.children
         .map((e) => Book.fromJson(Map<String, dynamic>.from(e.value as Map)))
         .toList();
-
     books.shuffle();
     return books.take(count).toList();
   }
