@@ -1,4 +1,5 @@
-import 'package:book_app/models/book.dart';
+import 'package:book_app/models/saved_book.dart'; // Import model SavedBook
+import 'package:book_app/models/book.dart'; // Import model Book
 import 'package:firebase_database/firebase_database.dart';
 
 class BookSaveController {
@@ -9,33 +10,41 @@ class BookSaveController {
   // Lưu sách vào danh sách đã lưu của người dùng
   Future<void> saveBook(Book book, String userId) async {
     try {
-      final userRef = _database.ref().child('users').child(userId);
-      final snapshot = await userRef.get();
-      if (snapshot.exists) {
-        final currentData = Map<String, dynamic>.from(snapshot.value as Map);
-        final savedBooks = currentData['saveBooks']?.split(',') ?? [];
-        if (!savedBooks.contains(book.id)) {
-          savedBooks.add(book.id!);
-          await userRef.update({'saveBooks': savedBooks.join(',')});
-        }
-      }
+      // Tạo một ID mới cho mỗi sách được lưu
+      final savedBooksRef = _database.ref('saved_books').push();
+      final sbId = savedBooksRef.key!;
+
+      // Tạo đối tượng SavedBook
+      final savedBook = SavedBooks(
+        sbId: sbId,
+        bookId: book.id!,
+        userId: userId,
+      );
+
+      // Lưu đối tượng SavedBook vào Firebase
+      await savedBooksRef.set(savedBook.toMap());
     } catch (e) {
       print('Error saving book: $e');
       rethrow;
     }
   }
 
-  // Xóa sách khỏi danh sách đã lưu
+  // Xóa sách khỏi danh sách đã lưu của người dùng
   Future<void> removeBook(String bookId, String userId) async {
     try {
-      final userRef = _database.ref().child('users').child(userId);
-      final snapshot = await userRef.get();
-      if (snapshot.exists) {
-        final currentData = Map<String, dynamic>.from(snapshot.value as Map);
-        final savedBooks = currentData['saveBooks']?.split(',') ?? [];
-        if (savedBooks.contains(bookId)) {
-          savedBooks.remove(bookId);
-          await userRef.update({'saveBooks': savedBooks.join(',')});
+      // Lấy tham chiếu tới node 'saved_books'
+      final savedBooksRef = _database.ref('saved_books');
+
+      // Lọc sách đã lưu theo userId và bookId
+      final snapshot = await savedBooksRef
+          .orderByChild('userId')
+          .equalTo(userId)
+          .get();
+
+      for (var child in snapshot.children) {
+        if (child.child('bookId').value == bookId) {
+          await child.ref.remove(); // Xóa sách đã lưu
+          break;
         }
       }
     } catch (e) {

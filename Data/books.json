@@ -44,13 +44,7 @@
       "password": "123",
       "role": 0
     },
-    "user2": {
-      "avatar": "https://i.imgur.com/mOFr66N.png",
-      "email": "nghia@gmail.com",
-      "name": "nghia le",
-      "password": "123",
-      "role": 1
-    },
+
     "user3": {
       "avatar": "https://i.imgur.com/mOFr66N.png",
       "email": "tdn@gmail.com",
