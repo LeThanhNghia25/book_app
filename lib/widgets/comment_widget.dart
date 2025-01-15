@@ -26,16 +26,19 @@ class CommentWidget extends StatelessWidget {
           const SizedBox(height: 8),
           // Hiển thị bình luận với StreamBuilder
           StreamBuilder<DatabaseEvent>(
-            stream: _commentController.fetchCommentsStream(bookId),  // Truyền bookId vào stream
+            stream: _commentController.fetchCommentsStream(bookId),
+            // Truyền bookId vào stream
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Lỗi: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
+              } else if (!snapshot.hasData ||
+                  snapshot.data!.snapshot.value == null) {
                 return const Center(child: Text('Chưa có bình luận nào.'));
               } else {
-                final commentsMap = Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map);
+                final commentsMap = Map<String, dynamic>.from(
+                    snapshot.data!.snapshot.value as Map);
                 final comments = commentsMap.values.map((e) {
                   return Comment.fromMap(Map<String, dynamic>.from(e));
                 }).toList();
@@ -45,9 +48,18 @@ class CommentWidget extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: comments.length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(comments[index].text),
-                      subtitle: Text('By: ${comments[index].userName}'),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          title: Text(comments[index].text),
+                        ),
+                        // Dấu ngạch ngang giữa các bình luận
+                        const Divider(
+                          thickness: 1.5, // Độ dày của ngạch ngang
+                          color: Colors.grey, // Màu của ngạch ngang
+                        ),
+                      ],
                     );
                   },
                 );
