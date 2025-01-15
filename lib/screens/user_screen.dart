@@ -1,4 +1,4 @@
-import 'package:book_app/screens/profileEdit_screen.dart';
+import 'package:book_app/screens/saved_articles_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -193,10 +193,10 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     return Column(
       children: [
         colorTile(Icons.person_outline, Colors.deepPurple,
-            "Chỉnh sửa thông tin người dùng",
+            "Chỉnh sửa thông tin",
             onTap: () => _showEditUserDialog(context, user)),
         colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt"),
-        colorTile(Icons.bookmark_border, Colors.pink, "Lưu bài viết"),
+        colorTile(Icons.bookmark_border, Colors.pink, "Sách yêu thích", onTap: () => onSavedArticlesTap(context)),
         colorTile(Icons.favorite_border, Colors.orange, "Referral code"),
       ],
     );
@@ -252,4 +252,11 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
     userController.logout(context);
   }
+  void onSavedArticlesTap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SavedArticlesScreen()),
+    );
+  }
+
 }
