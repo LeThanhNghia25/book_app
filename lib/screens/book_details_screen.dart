@@ -8,6 +8,8 @@ import '../controllers/book_save_controller.dart';
 import '../state/state_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../widgets/comment_widget.dart';
+
 class BookDetails extends ConsumerWidget {
   const BookDetails({super.key});
 
@@ -243,6 +245,9 @@ class BookDetails extends ConsumerWidget {
                     }
                   },
                 ),
+                // Comment section
+                CommentWidget(bookId: book.id ?? 'unknown'),
+
               ],
             ),
           ),

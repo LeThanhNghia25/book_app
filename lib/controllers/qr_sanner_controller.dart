@@ -58,8 +58,9 @@ class _QRScannerPageState extends ConsumerState<QRScannerPage> {
     final snapshot = await _bookRef.child(bookId).get();
 
     if (snapshot.exists) {
-      var bookData = Map<String, dynamic>.from(snapshot.value as Map);
-      ref.read(selectedBookProvider.notifier).state = Book.fromJson(Map<String, dynamic>.from(bookData));
+      final bookData = Map<String, dynamic>.from(snapshot.value as Map);
+      // Truyền bookId vào hàm fromJson
+      ref.read(selectedBookProvider.notifier).state = Book.fromJson(bookData, bookId);
       Navigator.pushNamed(context, '/chapters');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

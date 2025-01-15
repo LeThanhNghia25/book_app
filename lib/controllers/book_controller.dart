@@ -15,8 +15,10 @@ class BookController {
     if (snapshot.exists && snapshot.value is Map) {
       final booksMap = snapshot.value as Map<dynamic, dynamic>;
 
-      return booksMap.values.map((bookData) {
-        return Book.fromJson(Map<String, dynamic>.from(bookData));
+      return booksMap.entries.map((entry) {
+        final id = entry.key as String; // Lấy id từ key Firebase
+        final bookData = entry.value as Map<dynamic, dynamic>;
+        return Book.fromJson(Map<String, dynamic>.from(bookData), id);
       }).toList();
     }
 
@@ -28,12 +30,17 @@ class BookController {
     if (!snapshot.exists) {
       return [];
     }
-    final books = snapshot.children
-        .map((e) => Book.fromJson(Map<String, dynamic>.from(e.value as Map)))
-        .toList();
+
+    final books = snapshot.children.map((e) {
+      final id = e.key as String; // Lấy id từ key Firebase
+      final bookData = e.value as Map<dynamic, dynamic>;
+      return Book.fromJson(Map<String, dynamic>.from(bookData), id);
+    }).toList();
+
     books.shuffle();
     return books.take(count).toList();
   }
+
 
   // Phương thức lấy sách theo thể loại
   Future<List<Book>> fetchBooksByCategory(String category) async {
@@ -42,9 +49,11 @@ class BookController {
       return [];
     }
 
-    final books = snapshot.children
-        .map((e) => Book.fromJson(Map<String, dynamic>.from(e.value as Map)))
-        .toList();
+    final books = snapshot.children.map((e) {
+      final id = e.key as String; // Lấy id từ key Firebase
+      final bookData = e.value as Map<dynamic, dynamic>;
+      return Book.fromJson(Map<String, dynamic>.from(bookData), id);
+    }).toList();
 
     // Lọc sách theo thể loại
     return books.where((book) {
@@ -54,20 +63,6 @@ class BookController {
           .toList();
       return bookCategories.contains(category.trim().toLowerCase());
     }).toList();
-  }
-  Future<List<Comment>> fetchCommentsForBook(String bookId) async {
-    final commentRef = _bookRef.ref;
-    final snapshot = await commentRef.orderByChild('BookId').equalTo(bookId).get();
-
-    if (snapshot.exists) {
-      final commentsMap = snapshot.value as Map<dynamic, dynamic>;
-      return commentsMap.entries.map((entry) {
-        final commentData = entry.value;
-        return Comment.fromMap(commentData);
-      }).toList();
-    } else {
-      return [];
-    }
   }
 
 }
