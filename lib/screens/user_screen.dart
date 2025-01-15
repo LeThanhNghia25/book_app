@@ -1,4 +1,3 @@
-import 'package:book_app/screens/profileEdit_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -193,7 +192,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     return Column(
       children: [
         colorTile(Icons.person_outline, Colors.deepPurple,
-            "Chỉnh sửa thông tin người dùng",
+            "Chỉnh sửa thông tin",
             onTap: () => _showEditUserDialog(context, user)),
         colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt"),
         colorTile(Icons.bookmark_border, Colors.pink, "Lưu bài viết"),

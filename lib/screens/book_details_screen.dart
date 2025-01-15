@@ -1,11 +1,14 @@
 import 'package:book_app/models/book.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../controllers/book_save_controller.dart';
 import '../providers/book_providers.dart';
 import '../state/state_manager.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 class BookDetails extends ConsumerWidget {
   const BookDetails({super.key});
+
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,6 +21,20 @@ class BookDetails extends ConsumerWidget {
       );
     }
 
+    // Kiểm tra trạng thái bookmark khi khởi tạo
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userId = user.uid;
+        final bookSaveController = BookSaveController(FirebaseDatabase.instance);
+
+        // Kiểm tra xem sách có được lưu không
+        final savedBooks = await bookSaveController.fetchBookById(userId);
+        if (savedBooks.contains(book.id)) {
+          ref.read(bookmarkProvider.notifier).state = true;
+        }
+      }
+    });
     return savedBooksAsync.when(
       data: (savedBooks) {
         // Kiểm tra xem cuốn sách hiện tại có trong danh sách đã lưu không
@@ -46,8 +63,8 @@ class BookDetails extends ConsumerWidget {
                     children: [
                       Image.network(
                         book.image ?? 'https://via.placeholder.com/100',
-                        height: 280,
-                        width: 200,
+                        height: 260,
+                        width: 180,
                         fit: BoxFit.cover,
                       ),
                       const SizedBox(width: 16),
@@ -68,64 +85,60 @@ class BookDetails extends ConsumerWidget {
                               style: const TextStyle(fontSize: 18),
                             ),
                             const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    ref.read(booksSelected.notifier).state = book;
-                                    Navigator.pushNamed(context, "/chapters");
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    side: const BorderSide(color: Color(0xFFF44A3E)),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Đọc ngay',
-                                    style: TextStyle(color: Color(0xFFF44A3E)),
-                                  ),
+                        Wrap(
+                          spacing: 10,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Hành động khi nhấn nút
+                                ref.read(booksSelected.notifier).state = book;
+                                Navigator.pushNamed(context, "/chapters");
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: const BorderSide(color: Color(0xFFF44A3E)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                const SizedBox(width: 10),
-                                IconButton(
-                                  onPressed: () async {
-                                    final bookSaveController = ref.read(bookSaveControllerProvider);
-                                    try {
-                                      if (isBookmarked) {
-                                        // Nếu sách đã được lưu, hủy lưu
-                                        await bookSaveController.removeBook(book.id!, ref.read(userIdProvider));
-                                        // Cập nhật trạng thái cho sách hiện tại
-                                        ref.read(isBookmarkedProvider(book.id!).notifier).state = false;
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Đã hủy lưu sách: ${book.name}')),
-                                        );
-                                      } else {
-                                        // Nếu sách chưa được lưu, lưu lại
-                                        await bookSaveController.saveBook(book, ref.read(userIdProvider));
-                                        // Cập nhật trạng thái cho sách hiện tại
-                                        ref.read(isBookmarkedProvider(book.id!).notifier).state = true;
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Đã lưu sách: ${book.name}')),
-                                        );
-                                      }
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Lỗi khi lưu sách: $e')),
-                                      );
-                                    }
-
-                                    ref.refresh(fetchSavedBooksProvider); // Làm mới danh sách sách đã lưu
-                                  },
-                                  icon: Icon(
-                                    isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                                    color: isBookmarked ? Colors.yellow : Colors.grey,
-                                  ),
-                                  iconSize: 30,
-                                ),
-
-                              ],
+                              ),
+                              child: const Text(
+                                'Đọc ngay',
+                                style: TextStyle(color: Color(0xFFF44A3E)),
+                              ),
                             ),
+                            IconButton(
+                              onPressed: () async {
+                                final bookSaveController = BookSaveController(FirebaseDatabase.instance);
+                                final user = FirebaseAuth.instance.currentUser;
+
+                                if (user == null) {
+                                  print('Error: User not logged in');
+                                  return;
+                                }
+
+                                final userId = user.uid; // Lấy userId từ Firebase Authentication
+
+                                try {
+                                  if (isBookmarked) {
+                                    // Hủy lưu sách
+                                    await bookSaveController.removeBook(book.id!, userId);
+                                  } else {
+                                    // Lưu sách
+                                    await bookSaveController.saveBook(book, userId);
+                                  }
+                                } catch (e) {
+                                  print('Error updating bookmark: $e');
+                                }
+                              },
+                              icon: Icon(
+                                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                                color: isBookmarked ? Colors.yellow : Colors.grey,
+                              ),
+                              iconSize: 30,
+                            ),
+                          ],
+                        ),
+
                           ],
                         ),
                       ),
