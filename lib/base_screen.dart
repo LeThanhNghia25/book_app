@@ -28,8 +28,7 @@ class _BaseScreenState extends State<BaseScreen> {
     const HomeScreen(),
     const CategoryScreen(),
     const AdminScreen(),
-
-    UserScreen(),  // Sử dụng UserScreen để hiển thị thông tin người dùng
+    const UserScreen(),  // Sử dụng UserScreen để hiển thị thông tin người dùng
 
   ];
 

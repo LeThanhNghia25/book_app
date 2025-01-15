@@ -49,7 +49,7 @@ class AllBooksScreen extends ConsumerWidget {
                 final book = books[index];
                 return GestureDetector(
                   onTap: () {
-                    ref.read(booksSelected.notifier).state = book;
+                    ref.read(selectedBookProvider.notifier).state = book;
                     Navigator.pushNamed(context, "/chapters");
                   },
                   child: Card(
