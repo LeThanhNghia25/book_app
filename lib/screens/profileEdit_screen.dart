@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../models/user.dart';
@@ -13,38 +14,55 @@ class ProfileEditScreen extends StatefulWidget {
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
   late final UserController _usersController;
-  late Future<List<User>> _usersFuture;
+  late Future<User?> _userFuture;
 
+  @override
+  void initState() {
+    super.initState();
+
+    // Khởi tạo UserController
+    final database = FirebaseDatabase.instanceFor(app: Firebase.app());
+    _usersController = UserController(database);
+
+    // Lấy dữ liệu người dùng từ Firebase hoặc từ đối tượng user đã truyền vào
+    if (widget.user != null) {
+      _userFuture = Future.value(widget.user);  // Nếu đã có user được truyền vào
+    } else {
+      _userFuture = _usersController.fetchCurrentUserData(); // Lấy dữ liệu user từ Firebase nếu không có
+    }
+  }
+
+  // Hàm hiển thị hộp thoại chỉnh sửa thông tin người dùng
   void _showEditUserDialog(BuildContext context, User user) {
     final nameController = TextEditingController(text: user.name);
     final emailController = TextEditingController(text: user.email);
-    final passwordController = TextEditingController(text: ''); // Khởi tạo controller cho mật khẩu
+    final passwordController = TextEditingController(text: ''); // Khởi tạo mật khẩu trống
     final avatarController = TextEditingController(text: user.avatar);
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit User'),
+          title: const Text('Chỉnh sửa người dùng'),
           content: SingleChildScrollView(
             child: Column(
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
+                  decoration: const InputDecoration(labelText: 'Tên'),
                 ),
                 TextField(
                   controller: emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                 ),
                 TextField(
-                  controller: passwordController, // Sử dụng passwordController
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  obscureText: true, // Ẩn mật khẩu khi nhập
+                  controller: passwordController,
+                  decoration: const InputDecoration(labelText: 'Mật khẩu'),
+                  obscureText: true,
                 ),
                 TextField(
                   controller: avatarController,
-                  decoration: const InputDecoration(labelText: 'Avatar URL'),
+                  decoration: const InputDecoration(labelText: 'URL Avatar'),
                 ),
               ],
             ),
@@ -52,26 +70,28 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // Đóng hộp thoại mà không lưu thay đổi
               },
-              child: const Text('Cancel'),
+              child: const Text('Hủy'),
             ),
             ElevatedButton(
               onPressed: () async {
                 final updatedData = {
                   'name': nameController.text.trim(),
                   'email': emailController.text.trim(),
-                  'password': passwordController.text.trim(), // Lưu mật khẩu mới
+                  'password': passwordController.text.trim(),
                   'avatar': avatarController.text.trim(),
                 };
 
+                // Cập nhật thông tin người dùng lên Firebase
                 await _usersController.updateUser(user.id, updatedData);
                 setState(() {
-                  _usersFuture = _usersController.fetchUsers();
+                  // Tải lại dữ liệu người dùng
+                  _userFuture = _usersController.fetchCurrentUserData();
                 });
-                Navigator.pop(context);
+                Navigator.pop(context); // Đóng hộp thoại sau khi lưu
               },
-              child: const Text('Save'),
+              child: const Text('Lưu'),
             ),
           ],
         );
@@ -80,20 +100,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    final database = FirebaseDatabase.instance;
-    _usersController = UserController(database);
-    _usersFuture = _usersController.fetchUsers();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Center(
           child: Text(
-            'Chinh sua thong tin nguoi dung',
+            'Chỉnh sửa thông tin người dùng',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -102,42 +114,31 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         ),
         backgroundColor: Colors.red,
       ),
-      body: FutureBuilder<List<User>>(
-        future: _usersFuture,
+      body: FutureBuilder<User?>(
+        future: _userFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No users found.'));
+            return Center(child: Text('Lỗi: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text('Không tìm thấy người dùng.'));
           } else {
-            final users = snapshot.data!;
-            return ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                final user = users[index];
-                return ListTile(
+            final user = snapshot.data!;
+            return ListView(
+              children: [
+                ListTile(
                   leading: CircleAvatar(
                     backgroundImage: NetworkImage(user.avatar),
                   ),
                   title: Text(user.name),
                   subtitle: Text(user.email),
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        _showEditUserDialog(context, user);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Text('Edit'),
-                      ),
-                    ],
+                  trailing: IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () => _showEditUserDialog(context, user),
                   ),
-                );
-              },
+                ),
+              ],
             );
           }
         },

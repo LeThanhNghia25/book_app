@@ -27,35 +27,98 @@ class _ManageBooksScreenState extends State<ManageBooksScreen> {
     final nameController = TextEditingController(text: book?.name ?? '');
     final categoryController = TextEditingController(text: book?.category ?? '');
     final imageController = TextEditingController(text: book?.image ?? '');
-    final descriptionController =
-    TextEditingController(text: book?.description ?? '');
+    final descriptionController = TextEditingController(text: book?.description ?? '');
+    String selectedType = book?.type ?? 'Text'; // Gán giá trị mặc định là 'text'
+    List<Chapter> chapters = book?.chapters ?? [];
+
+    final chapterNameController = TextEditingController();
+    final chapterContentController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(book == null ? 'Thêm sách' : 'Chỉnh sửa sách'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Tên sách'),
-              ),
-              TextField(
-                controller: categoryController,
-                decoration: const InputDecoration(labelText: 'Thể loại'),
-              ),
-              TextField(
-                controller: imageController,
-                decoration: const InputDecoration(labelText: 'Ảnh bìa (URL)'),
-              ),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Mô tả sách'),
-                maxLines: 3,
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Tên sách'),
+                ),
+                TextField(
+                  controller: categoryController,
+                  decoration: const InputDecoration(labelText: 'Thể loại'),
+                ),
+                TextField(
+                  controller: imageController,
+                  decoration: const InputDecoration(labelText: 'Ảnh bìa (URL)'),
+                ),
+                TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Mô tả sách'),
+                  maxLines: 3,
+                ),
+                Text('Type: $selectedType', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                Text('Chapters', style: Theme.of(context).textTheme.titleLarge),
+                for (int i = 0; i < chapters.length; i++)
+                  Column(
+                    children: [
+                      // Sử dụng TextField để cho phép chỉnh sửa tên chương
+                      TextField(
+                        controller: TextEditingController(text: chapters[i].name),
+                        decoration: const InputDecoration(labelText: 'Tên chương'),
+                        onChanged: (value) {
+                          chapters[i].name = value; // Cập nhật tên chương
+                        },
+                      ),
+                      // Sử dụng TextField để cho phép chỉnh sửa nội dung chương
+                      TextField(
+                        controller: TextEditingController(text: chapters[i].content),
+                        decoration: const InputDecoration(labelText: 'Nội dung chương'),
+                        onChanged: (value) {
+                          chapters[i].content = value; // Cập nhật nội dung chương
+                        },
+                        maxLines: 3,
+                      ),
+                      // Cải thiện việc xóa chương
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          setState(() {
+                            chapters.removeAt(i); // Xóa chương tại vị trí i
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                TextField(
+                  controller: chapterNameController,
+                  decoration: const InputDecoration(labelText: 'Tên chương'),
+                ),
+                TextField(
+                  controller: chapterContentController,
+                  decoration: const InputDecoration(labelText: 'Nội dung chương'),
+                  maxLines: 3,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      chapters.add(Chapter(
+                        name: chapterNameController.text,
+                        content: chapterContentController.text,
+                      ));
+                      chapterNameController.clear();
+                      chapterContentController.clear();
+                    });
+                  },
+                  child: const Text('Thêm chương'),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -69,16 +132,20 @@ class _ManageBooksScreenState extends State<ManageBooksScreen> {
                   'Category': categoryController.text.trim(),
                   'Image': imageController.text.trim(),
                   'Description': descriptionController.text.trim(),
+                  'Type': selectedType,  // Sử dụng selectedType để lưu giá trị đúng
+                  'Chapters': chapters.map((e) => e.toJson()).toList(),
                 };
 
                 try {
                   if (book == null) {
                     // Thêm sách mới
                     final newBook = Book(
-                      name: updatedData['Name'],
-                      category: updatedData['Category'],
-                      image: updatedData['Image'],
-                      description: updatedData['Description'],
+                      name: updatedData['Name'] as String?,  // Explicitly cast to String?
+                      category: updatedData['Category'] as String?,
+                      image: updatedData['Image'] as String?,
+                      description: updatedData['Description'] as String?,
+                      type: updatedData['Type'] as String?,
+                      chapters: chapters,
                     );
                     await _booksController.addBookAutoId(newBook);
                   } else {
