@@ -5,6 +5,7 @@ import '../models/book.dart';
 import '../controllers/book_controller.dart';
 import '../providers/book_providers.dart';
 import '../state/state_manager.dart';
+import 'comment.dart';
 
 class BookDetails extends ConsumerWidget {
   const BookDetails({super.key});
@@ -216,6 +217,23 @@ class BookDetails extends ConsumerWidget {
                       );
                     }
                   },
+                ),
+                const Divider(),
+                // Phần bình luận
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Bình luận',
+                        style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      // Widget nhập bình luận
+                      // CommentScreen(bookId: book.id!),
+                    ],
+                  ),
                 ),
               ],
             ),
