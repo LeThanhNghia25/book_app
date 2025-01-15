@@ -1,8 +1,10 @@
 import 'package:firebase_database/firebase_database.dart';
 import '../models/book.dart';
+import '../models/comment.dart';
 
 class BookController {
   final DatabaseReference _bookRef;
+
 
   BookController(FirebaseDatabase database)
       : _bookRef = database.ref().child('Books');
@@ -52,6 +54,20 @@ class BookController {
           .toList();
       return bookCategories.contains(category.trim().toLowerCase());
     }).toList();
+  }
+  Future<List<Comment>> fetchCommentsForBook(String bookId) async {
+    final commentRef = _bookRef.ref;
+    final snapshot = await commentRef.orderByChild('BookId').equalTo(bookId).get();
+
+    if (snapshot.exists) {
+      final commentsMap = snapshot.value as Map<dynamic, dynamic>;
+      return commentsMap.entries.map((entry) {
+        final commentData = entry.value;
+        return Comment.fromMap(commentData);
+      }).toList();
+    } else {
+      return [];
+    }
   }
 
 }
