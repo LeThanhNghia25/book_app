@@ -46,20 +46,28 @@ class ReadScreen extends ConsumerWidget {
         )
             : const Center(child: Text('Không có hình ảnh cho chương này.')))
             : book.type == 'Text'
-            ? (currentChapter.content != null &&
-            currentChapter.content!.isNotEmpty
+            ? (currentChapter.content != null && currentChapter.content!.isNotEmpty
             ? Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Chiều cao vừa đủ
               crossAxisAlignment: CrossAxisAlignment.start, // Căn lề trái
               children: [
                 Align(
                   alignment: Alignment.topLeft, // Căn từ trên cùng
-                  child: Text(
-                    currentChapter.content!,
-                    style: const TextStyle(fontSize: 18.0),
+                  child: Text.rich(
+                    TextSpan(
+                      children: currentChapter.content!
+                          .split('\n') // Tách văn bản thành các đoạn theo dấu xuống dòng
+                          .map((line) {
+                        return TextSpan(
+                          text: '$line\n', // Đảm bảo xuống dòng
+                          style: const TextStyle(fontSize: 18.0),
+                        );
+                      }).toList(),
+                    ),
+                    softWrap: true, // Tự động xuống dòng khi cần
+                    textAlign: TextAlign.justify, // Căn đều văn bản
                   ),
                 ),
               ],
