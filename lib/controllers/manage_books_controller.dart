@@ -57,6 +57,4 @@ class ManageBooksController {
     // Lưu sách mới với key mới
     await _bookRef.child(newKey).set(book.toJson());
   }
-
-
 }
