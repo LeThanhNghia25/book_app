@@ -141,7 +141,7 @@ class CustomSearch extends SearchDelegate {
                 onTap: () async {
                   try {
                     Book bookDetails = await fetchBookDetailsFromFirebase(bookName);
-                    ref.read(booksSelected.notifier).state = bookDetails;
+                    ref.read(selectedBookProvider.notifier).state = bookDetails;
 
                     Navigator.push(
                       context,

@@ -18,12 +18,12 @@ class Book {
   });
 
   Book.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    category = json['Category'];
-    name = json['Name'];
-    image = json['Image'];
-    description = json['Description'];
-    type = json['Type'];
+    id = json['id'] ?? 'unknown'; // Gán giá trị mặc định nếu thiếu id
+    category = json['Category'] ?? 'Unknown';
+    name = json['Name'] ?? 'Unnamed Book';
+    image = json['Image'] ?? 'https://via.placeholder.com/150';
+    description = json['Description'] ?? 'No description available';
+    type = json['Type'] ?? 'Unknown';
     if (json['Chapters'] != null) {
       chapters = (json['Chapters'] as List)
           .map((e) => Chapter.fromJson(Map<String, dynamic>.from(e)))
@@ -32,6 +32,7 @@ class Book {
       chapters = [];
     }
   }
+
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
