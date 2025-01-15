@@ -72,7 +72,9 @@ Future<Book> fetchBookDetailsFromFirebase(String bookName) async {
     final booksMap = snapshot.value as Map<dynamic, dynamic>;
 
     for (var entry in booksMap.entries) {
-      var book = Book.fromJson(Map<String, dynamic>.from(entry.value));
+      final bookId = entry.key.toString(); // Lấy ID từ Firebase
+      final bookData = Map<String, dynamic>.from(entry.value);
+      final book = Book.fromJson(bookData, bookId); // Truyền ID vào fromJson
       if (book.name == bookName) {
         return book; // Trả về Book khi tìm thấy
       }

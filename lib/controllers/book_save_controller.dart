@@ -50,7 +50,10 @@ class BookSaveController {
       final bookRef = _database.ref().child('books').child(bookId);
       final snapshot = await bookRef.get();
       if (snapshot.exists) {
-        return Book.fromJson(Map<String, dynamic>.from(snapshot.value as Map));
+        return Book.fromJson(
+          Map<String, dynamic>.from(snapshot.value as Map),
+          bookId, // Truyền ID của sách vào đây
+        );
       } else {
         throw Exception('Book not found');
       }
@@ -59,4 +62,5 @@ class BookSaveController {
       rethrow;
     }
   }
+
 }

@@ -17,8 +17,8 @@ class Book {
     this.chapters,
   });
 
-  Book.fromJson(Map<String, dynamic> json) {
-    id = json['id'] ?? 'unknown'; // Gán giá trị mặc định nếu thiếu id
+  Book.fromJson(Map<String, dynamic> json, String idFromFirebase) {
+    id = idFromFirebase; // Gán id từ Firebase key
     category = json['Category'] ?? 'Unknown';
     name = json['Name'] ?? 'Unnamed Book';
     image = json['Image'] ?? 'https://via.placeholder.com/150';
@@ -32,7 +32,6 @@ class Book {
       chapters = [];
     }
   }
-
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
