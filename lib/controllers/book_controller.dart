@@ -33,4 +33,25 @@ class BookController {
     return books.take(count).toList();
   }
 
+  // Phương thức lấy sách theo thể loại
+  Future<List<Book>> fetchBooksByCategory(String category) async {
+    final snapshot = await _bookRef.get();
+    if (!snapshot.exists) {
+      return [];
+    }
+
+    final books = snapshot.children
+        .map((e) => Book.fromJson(Map<String, dynamic>.from(e.value as Map)))
+        .toList();
+
+    // Lọc sách theo thể loại
+    return books.where((book) {
+      final bookCategories = (book.category ?? '')
+          .split(',')
+          .map((cat) => cat.trim().toLowerCase())
+          .toList();
+      return bookCategories.contains(category.trim().toLowerCase());
+    }).toList();
+  }
+
 }

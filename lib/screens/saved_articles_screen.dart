@@ -2,7 +2,6 @@
   import 'package:book_app/screens/book_details_screen.dart';
   import 'package:flutter/material.dart';
   import 'package:flutter_riverpod/flutter_riverpod.dart';
-  import '../providers/book_providers.dart';
   import '../state/state_manager.dart';
 
   class SavedArticlesScreen extends ConsumerWidget {

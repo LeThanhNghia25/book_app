@@ -6,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../controllers/book_details_controller.dart';
 import '../services/google_books_api.dart';
 import '../state/state_manager.dart';
 import 'all_books_screen.dart';
@@ -105,8 +104,6 @@ class HomeScreen extends ConsumerWidget {
                         onTap: () {
                           // Cập nhật selected book vào provider
                           ref.read(selectedBookProvider.notifier).state = book;
-
-                          // Chuyển sang màn hình chi tiết với MaterialPageRoute
                           Navigator.push(
                             context,
                             MaterialPageRoute(
