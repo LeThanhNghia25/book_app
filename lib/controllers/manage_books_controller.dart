@@ -7,7 +7,6 @@ class ManageBooksController {
   ManageBooksController(FirebaseDatabase database)
       : _bookRef = database.ref('Books');
 
-  // Lấy danh sách tất cả các sách
   Future<List<Book>> fetchAllBooks() async {
     final snapshot = await _bookRef.get();
 
@@ -16,14 +15,15 @@ class ManageBooksController {
 
       // Chuyển đổi dữ liệu từ Firebase sang danh sách Book
       return booksMap.entries.map((entry) {
-        final bookId = entry.key.toString();
-        final bookData = entry.value as Map<dynamic, dynamic>;
-        return Book.fromJson({...bookData, 'id': bookId});
+        final bookId = entry.key.toString(); // ID của sách từ Firebase
+        final bookData = Map<String, dynamic>.from(entry.value as Map);
+        return Book.fromJson(bookData, bookId); // Truyền ID vào hàm fromJson
       }).toList();
     } else {
       return [];
     }
   }
+
 
   // Xóa sách
   Future<void> deleteBook(String bookId) async {

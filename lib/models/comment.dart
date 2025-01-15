@@ -1,23 +1,27 @@
 class Comment {
   final String userId;
   final String userName;
-  final String content;
+  final String text;
 
-  Comment({required this.userId, required this.userName, required this.content});
+  Comment({
+    required this.userId,
+    required this.userName,
+    required this.text,
+  });
 
   Map<String, dynamic> toMap() {
     return {
-      'userId': userId,
-      'userName': userName,
-      'content': content,
+      'UserId': userId,
+      'UserName': userName,
+      'Text': text,
     };
   }
 
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
-      userId: map['userId'],
-      userName: map['userName'],
-      content: map['content'],
+      userId: map['UserId'] ?? '',
+      userName: map['UserName'] ?? 'Anonymous',
+      text: map['Text'] ?? '',
     );
   }
 }
