@@ -1,12 +1,15 @@
 import 'package:firebase_database/firebase_database.dart';
+
 import '../models/book.dart';
+import '../models/comment.dart';
 
 class BookController {
   final DatabaseReference _bookRef;
+  final FirebaseDatabase database;
 
-  BookController(FirebaseDatabase database)
-      : _bookRef = database.ref().child('Books');
+  BookController(this.database) : _bookRef = database.ref().child('Books');
 
+  // Lấy danh sách sách
   Future<List<Book>> fetchBooks() async {
     final snapshot = await _bookRef.get();
 
@@ -21,6 +24,7 @@ class BookController {
     return [];
   }
 
+  // Lấy danh sách sách ngẫu nhiên
   Future<List<Book>> fetchRandomBooks(int count) async {
     final snapshot = await _bookRef.get();
     if (!snapshot.exists) {
@@ -33,4 +37,18 @@ class BookController {
     return books.take(count).toList();
   }
 
+  Future<List<Comment>> fetchCommentsForBook(String bookId) async {
+    final commentRef = database.ref('Comment');
+    final snapshot = await commentRef.orderByChild('BookId').equalTo(bookId).get();
+
+    if (snapshot.exists) {
+      final commentsMap = snapshot.value as Map<dynamic, dynamic>;
+      return commentsMap.entries.map((entry) {
+        final commentData = entry.value;
+        return Comment.fromMap(commentData);
+      }).toList();
+    } else {
+      return [];
+    }
+  }
 }
