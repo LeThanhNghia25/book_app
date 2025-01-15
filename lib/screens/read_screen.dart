@@ -9,11 +9,11 @@ class ReadScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final book = ref.watch(booksSelected); // Lấy thông tin sách từ provider
+    final book = ref.watch(selectedBookProvider); // Lấy thông tin sách từ provider
     final currentChapter = ref.watch(chapterSelected); // Lấy chương hiện tại
 
     // Debug dữ liệu
-    print('Book: ${book.toJson()}');
+    print('Book: ${book?.toJson()}');
     print('Current Chapter: ${currentChapter.toJson()}');
 
     return Scaffold(
@@ -25,13 +25,13 @@ class ReadScreen extends ConsumerWidget {
         ),
         title: Center(
           child: Text(
-            book.name?.toUpperCase() ?? "Unknown",
+            book?.name?.toUpperCase() ?? "Unknown",
             style: const TextStyle(color: Colors.white),
           ),
         ),
       ),
       body: Center(
-        child: book.type == 'Comic'
+        child: book?.type == 'Comic'
             ? (currentChapter.links != null && currentChapter.links!.isNotEmpty
             ? ListView.builder(
           itemCount: currentChapter.links?.length ?? 0,
@@ -45,7 +45,7 @@ class ReadScreen extends ConsumerWidget {
           },
         )
             : const Center(child: Text('Không có hình ảnh cho chương này.')))
-            : book.type == 'Text'
+            : book?.type == 'Text'
             ? (currentChapter.content != null && currentChapter.content!.isNotEmpty
             ? Padding(
           padding: const EdgeInsets.all(16.0),

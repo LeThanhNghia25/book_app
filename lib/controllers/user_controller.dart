@@ -47,6 +47,17 @@ class UserController {
     }
     return null;
   }
+  // Lấy tên người dùng từ Firebase Realtime Database theo userId
+  Future<User?> fetchUserNameById(String userId, String name) async {
+    final snapshot = await _userRef.child(userId).get();
+    if (snapshot.exists) {
+      var userData = Map<String, dynamic>.from(snapshot.value as Map);
+      userData['id'] = userId;
+      userData['name'] = name;
+      return User.fromJson(userData);
+    }
+    return null;
+  }
 
   // Lấy thông tin chi tiết 1 user theo email
   Future<User?> fetchUserByEmail(String email) async {
@@ -88,4 +99,5 @@ class UserController {
       throw Exception("Failed to update user data: $e");
     }
   }
+
 }

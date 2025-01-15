@@ -6,15 +6,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../controllers/book_details_controller.dart';
-import '../models/user.dart';
 import '../services/google_books_api.dart';
 import '../state/state_manager.dart';
 import 'all_books_screen.dart';
 import 'book_details_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
-  const HomeScreen( {super.key});
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +20,6 @@ class HomeScreen extends ConsumerWidget {
     final bannerController = BannerController(database);
     final bookController = BookController(database);
     final googleBooksAPI = GoogleBooksAPI();
-
 
     return Scaffold(
       body: CustomScrollView(
@@ -42,9 +39,9 @@ class HomeScreen extends ConsumerWidget {
                   return CarouselSlider(
                     items: snapshot.data!
                         .map((url) => Builder(
-                      builder: (context) =>
-                          Image.network(url, fit: BoxFit.cover),
-                    ))
+                              builder: (context) =>
+                                  Image.network(url, fit: BoxFit.cover),
+                            ))
                         .toList(),
                     options: CarouselOptions(
                       autoPlay: true,
@@ -62,7 +59,7 @@ class HomeScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -101,18 +98,16 @@ class HomeScreen extends ConsumerWidget {
                 final books = snapshot.data!.take(9).toList();
                 return SliverGrid(
                   delegate: SliverChildBuilderDelegate(
-                        (context, index) {
+                    (context, index) {
                       final book = books[index];
                       return GestureDetector(
                         onTap: () {
                           // Cập nhật selected book vào provider
                           ref.read(selectedBookProvider.notifier).state = book;
-
-                          // Chuyển sang màn hình chi tiết với MaterialPageRoute
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>  BookDetails(),
+                              builder: (context) => const BookDetails(),
                             ),
                           );
                         },
@@ -187,7 +182,7 @@ class HomeScreen extends ConsumerWidget {
                 final books = snapshot.data!;
                 return SliverGrid(
                   delegate: SliverChildBuilderDelegate(
-                        (context, index) {
+                    (context, index) {
                       final book = books[index]['volumeInfo'];
                       final coverUrl = googleBooksAPI.getBookCover(book);
 
@@ -208,7 +203,7 @@ class HomeScreen extends ConsumerWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>  BookDetails()),
+                                builder: (context) => const BookDetails()),
                           );
                         },
                         child: Card(
