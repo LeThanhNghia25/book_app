@@ -6,9 +6,9 @@ import '../controllers/book_save_controller.dart';
 import '../providers/book_providers.dart';
 import '../state/state_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 class BookDetails extends ConsumerWidget {
   const BookDetails({super.key});
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,24 +21,10 @@ class BookDetails extends ConsumerWidget {
       );
     }
 
-    // Kiểm tra trạng thái bookmark khi khởi tạo
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final userId = user.uid;
-        final bookSaveController = BookSaveController(FirebaseDatabase.instance);
-
-        // Kiểm tra xem sách có được lưu không
-        final savedBooks = await bookSaveController.fetchBookById(userId);
-        if (savedBooks.contains(book.id)) {
-          ref.read(bookmarkProvider.notifier).state = true;
-        }
-      }
-    });
     return savedBooksAsync.when(
       data: (savedBooks) {
         // Kiểm tra xem cuốn sách hiện tại có trong danh sách đã lưu không
-        final isBookmarked = savedBooks.any((savedBook) => savedBook.id == book.id);
+        final isBookmarked = savedBooks.contains(book.id);
 
         return Scaffold(
           appBar: AppBar(
@@ -85,60 +71,59 @@ class BookDetails extends ConsumerWidget {
                               style: const TextStyle(fontSize: 18),
                             ),
                             const SizedBox(height: 16),
-                        Wrap(
-                          spacing: 10,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                // Hành động khi nhấn nút
-                                ref.read(booksSelected.notifier).state = book;
-                                Navigator.pushNamed(context, "/chapters");
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                side: const BorderSide(color: Color(0xFFF44A3E)),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                            Wrap(
+                              spacing: 10,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // Hành động khi nhấn nút
+                                    ref.read(booksSelected.notifier).state = book;
+                                    Navigator.pushNamed(context, "/chapters");
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    side: const BorderSide(color: Color(0xFFF44A3E)),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Đọc ngay',
+                                    style: TextStyle(color: Color(0xFFF44A3E)),
+                                  ),
                                 ),
-                              ),
-                              child: const Text(
-                                'Đọc ngay',
-                                style: TextStyle(color: Color(0xFFF44A3E)),
-                              ),
+                                IconButton(
+                                  onPressed: () async {
+                                    final bookSaveController = BookSaveController(FirebaseDatabase.instance);
+                                    final user = FirebaseAuth.instance.currentUser;
+
+                                    if (user == null) {
+                                      print('Error: User not logged in');
+                                      return;
+                                    }
+
+                                    final userId = user.uid; // Lấy userId từ Firebase Authentication
+
+                                    try {
+                                      if (isBookmarked) {
+                                        // Hủy lưu sách
+                                        await bookSaveController.removeBook(book.id!, userId);
+                                      } else {
+                                        // Lưu sách
+                                        await bookSaveController.saveBook(book, userId);
+                                      }
+                                    } catch (e) {
+                                      print('Error updating bookmark: $e');
+                                    }
+                                  },
+                                  icon: Icon(
+                                    isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                                    color: isBookmarked ? Colors.yellow : Colors.grey,
+                                  ),
+                                  iconSize: 30,
+                                ),
+                              ],
                             ),
-                            IconButton(
-                              onPressed: () async {
-                                final bookSaveController = BookSaveController(FirebaseDatabase.instance);
-                                final user = FirebaseAuth.instance.currentUser;
-
-                                if (user == null) {
-                                  print('Error: User not logged in');
-                                  return;
-                                }
-
-                                final userId = user.uid; // Lấy userId từ Firebase Authentication
-
-                                try {
-                                  if (isBookmarked) {
-                                    // Hủy lưu sách
-                                    await bookSaveController.removeBook(book.id!, userId);
-                                  } else {
-                                    // Lưu sách
-                                    await bookSaveController.saveBook(book, userId);
-                                  }
-                                } catch (e) {
-                                  print('Error updating bookmark: $e');
-                                }
-                              },
-                              icon: Icon(
-                                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                                color: isBookmarked ? Colors.yellow : Colors.grey,
-                              ),
-                              iconSize: 30,
-                            ),
-                          ],
-                        ),
-
                           ],
                         ),
                       ),
@@ -172,7 +157,6 @@ class BookDetails extends ConsumerWidget {
                     'Có thể bạn quan tâm',
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                   ),
-
                 ),
               ],
             ),
