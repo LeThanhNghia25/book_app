@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/book_providers.dart';
 import '../state/state_manager.dart';
+import 'chapter_screen.dart';
 
 class BookDetails extends ConsumerWidget {
   const BookDetails({super.key});
@@ -73,7 +74,10 @@ class BookDetails extends ConsumerWidget {
                                 ElevatedButton(
                                   onPressed: () {
                                     ref.read(booksSelected.notifier).state = book;
-                                    Navigator.pushNamed(context, "/chapters");
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const ChapterScreen()),
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -87,6 +91,7 @@ class BookDetails extends ConsumerWidget {
                                     style: TextStyle(color: Color(0xFFF44A3E)),
                                   ),
                                 ),
+
                                 const SizedBox(width: 10),
                                 IconButton(
                                   onPressed: () async {
