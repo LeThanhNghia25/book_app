@@ -69,7 +69,7 @@
                     ref.read(selectedBookProvider.notifier).state = book;
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BookDetails()),
+                      MaterialPageRoute(builder: (context) =>  BookDetails()),
                     );
                   },
                 );

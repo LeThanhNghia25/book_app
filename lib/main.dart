@@ -37,10 +37,11 @@ class MyApp extends StatelessWidget {
       home: const LoginScreen(),  // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
       // home: const BaseScreen(selectedIndex: 0),
       routes: {
-        '/bookDetails': (context) => const BookDetails(),
+        '/bookDetails': (context) =>  BookDetails(),
         '/chapters': (context) => const ChapterScreen(),
         '/admin': (context) => const AdminScreen(),
         '/savedArticles': (context) => const SavedArticlesScreen(),
+        '/login':(context) => LoginScreen(),
       },
       onUnknownRoute: (settings) => MaterialPageRoute(
         builder: (context) => const Scaffold(

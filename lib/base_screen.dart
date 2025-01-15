@@ -1,4 +1,5 @@
 import 'package:book_app/screens/admin/admin_screen.dart';
+import 'package:book_app/screens/book_details_screen.dart';
 import 'package:book_app/screens/category_screen.dart';
 import 'package:book_app/screens/home_screen.dart';
 import 'package:book_app/screens/user_screen.dart';
@@ -53,6 +54,9 @@ class _BaseScreenState extends State<BaseScreen> {
         index: _currentIndex,
         children: _screens.map((screen) {
           // Truyền dữ liệu user vào các màn hình con nếu có
+          // if (screen is HomeScreen) {
+          //   return HomeScreen(user: widget.user);  // Truyền user vào HomeScreen
+          // }
           if (screen is UserScreen) {
             return UserScreen(user: widget.user);  // Truyền user vào UserScreen
           }
