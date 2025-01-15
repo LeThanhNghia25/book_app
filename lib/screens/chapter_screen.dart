@@ -32,25 +32,27 @@ class ChapterScreen extends ConsumerWidget {
           ? Padding(
         padding: const EdgeInsets.all(8),
         child: ListView.builder(
-          itemCount: book.chapters?.length,
+          itemCount: book.chapters?.length ?? 0, // Bảo đảm itemCount không null
           itemBuilder: (context, index) {
             final chapter = book.chapters![index];
             return GestureDetector(
               onTap: () {
                 // Cập nhật `chapterSelected`
-                ref.read(chapterSelected.notifier).state = book.chapters![index];
+                ref.read(chapterSelected.notifier).state = chapter;
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        ReadScreen(chapter: book.chapters![index]), // Truyền chương
+                        ReadScreen(chapter: chapter), // Truyền chương
                   ),
                 );
               },
               child: Column(
                 children: [
                   ListTile(
-                    title: Text('${book.chapters?[index].name}'),
+                    title: Text(
+                      chapter.name ?? 'Chương không có tên', // Kiểm tra null cho tên chương
+                    ),
                   ),
                   const Divider(thickness: 1),
                 ],
