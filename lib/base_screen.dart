@@ -52,10 +52,6 @@ class _BaseScreenState extends State<BaseScreen> {
       body: IndexedStack(
         index: _currentIndex,
         children: _screens.map((screen) {
-          // Truyền dữ liệu user vào các màn hình con nếu có
-          // if (screen is HomeScreen) {
-          //   return HomeScreen(user: widget.user);  // Truyền user vào HomeScreen
-          // }
           if (screen is UserScreen) {
             return UserScreen(user: widget.user);  // Truyền user vào UserScreen
           }
