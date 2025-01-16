@@ -19,7 +19,7 @@ class Comment {
 
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
-      userId: map['UserId'] ?? '',
+      userId: map['UserId'] ?? 'Unknown',
       userName: map['UserName'] ?? 'Anonymous',
       text: map['Text'] ?? '',
     );
