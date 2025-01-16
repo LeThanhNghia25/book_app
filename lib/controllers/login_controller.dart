@@ -1,5 +1,4 @@
 import 'package:firebase_database/firebase_database.dart';
-
 import '../models/user.dart';
 
 class LoginController {
@@ -15,14 +14,15 @@ class LoginController {
 
       if (userSnapshot.exists) {
         // Chuyển dữ liệu từ snapshot thành Map
-        Map<String, dynamic> users = Map.from(userSnapshot.value as Map);
+        final usersMap = Map<String, dynamic>.from(userSnapshot.value as Map);
 
         // Duyệt qua tất cả người dùng để kiểm tra thông tin đăng nhập
-        for (var userId in users.keys) {
-          final user = users[userId];
+        for (var entry in usersMap.entries) {
+          final userId = entry.key;
+          final userData = Map<String, dynamic>.from(entry.value);
 
           // Kiểm tra email và mật khẩu
-          if (user['email'] == email && user['password'] == password) {
+          if (userData['email'] == email && userData['password'] == password) {
             return true; // Đăng nhập thành công
           }
         }
@@ -45,18 +45,16 @@ class LoginController {
 
       if (userSnapshot.exists) {
         // Chuyển dữ liệu từ snapshot thành Map
-        Map<String, dynamic> users = Map.from(userSnapshot.value as Map);
+        final usersMap = Map<String, dynamic>.from(userSnapshot.value as Map);
 
         // Duyệt qua tất cả người dùng để tìm thông tin người dùng khớp với email
-        for (var userId in users.keys) {
-          final user = users[userId];
+        for (var entry in usersMap.entries) {
+          final userId = entry.key;
+          final userData = Map<String, dynamic>.from(entry.value);
 
-          if (user['email'] == email) {
-            // Trả về đối tượng User thay vì Map
-            return User.fromJson({
-              'id': userId, // Gán id người dùng
-              ...Map<String, dynamic>.from(user), // Kết hợp dữ liệu từ user
-            });
+          if (userData['email'] == email) {
+            // Trả về đối tượng User
+            return User.fromJson(userId, userData);
           }
         }
       }
@@ -68,4 +66,29 @@ class LoginController {
     }
   }
 
+  /// Hàm lấy danh sách toàn bộ người dùng
+  Future<List<User>> fetchAllUsers() async {
+    final usersRef = _database.ref('Users');
+
+    try {
+      final userSnapshot = await usersRef.get();
+
+      if (userSnapshot.exists) {
+        // Chuyển dữ liệu từ snapshot thành Map
+        final usersMap = Map<String, dynamic>.from(userSnapshot.value as Map);
+
+        // Tạo danh sách User từ Map
+        return usersMap.entries.map((entry) {
+          final userId = entry.key;
+          final userData = Map<String, dynamic>.from(entry.value);
+          return User.fromJson(userId, userData);
+        }).toList();
+      }
+
+      return []; // Trả về danh sách rỗng nếu không có dữ liệu
+    } catch (e) {
+      print('Lỗi khi lấy danh sách người dùng: $e');
+      return [];
+    }
+  }
 }

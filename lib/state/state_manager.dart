@@ -1,12 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../controllers/book_save_controller.dart';
+import '../controllers/book_controller.dart';
+import '../controllers/book_saved_controller.dart';
+import '../controllers/user_controller.dart';
 import '../models/book.dart';
+import '../models/saved_books.dart';
 
 // Quản lý trạng thái sách được chọn
 final selectedBookProvider = StateProvider<Book?>((ref) => null);
+final userControllerProvider = Provider((ref) {
+  return UserController(FirebaseDatabase.instance);
+});
+
+final bookControllerProvider = Provider((ref) {
+  return BookController(FirebaseDatabase.instance);
+});
 
 final chapterSelected = StateProvider<Chapter>((ref) {
   return Chapter(name: "Unknown");
@@ -19,9 +30,16 @@ final firebaseDatabaseProvider = Provider<FirebaseDatabase>((ref) {
     databaseURL: 'https://bookapp-c5dce-default-rtdb.firebaseio.com/',
   );
 });
+// Provider cho Firebase Auth để lấy người dùng hiện tại
+final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
+  return FirebaseAuth.instance;
+});
 
-// Provider giả lập userId (thay bằng logic của bạn)
-final userIdProvider = Provider<String>((ref) => 'user4');
+// Provider lấy userId của người dùng hiện tại
+final userIdProvider = Provider<String?>((ref) {
+  final user = ref.watch(firebaseAuthProvider).currentUser;
+  return user?.uid; // Trả về UID nếu người dùng đang đăng nhập, ngược lại trả về null
+});
 
 // Provider cho BookSaveController
 final bookSaveControllerProvider = Provider<BookSaveController>((ref) {
@@ -29,31 +47,36 @@ final bookSaveControllerProvider = Provider<BookSaveController>((ref) {
 });
 
 // Provider lấy danh sách sách đã lưu
-final fetchSavedBooksProvider = FutureProvider<List<Book>>((ref) async {
+final fetchUserSavedBooksProvider = FutureProvider<List<String>>((ref) async {
   final userId = ref.watch(userIdProvider);
-  final userRef = FirebaseDatabase.instance.ref().child('users').child(userId);
-  final snapshot = await userRef.get();
 
-  if (snapshot.exists) {
-    final userData = Map<String, dynamic>.from(snapshot.value as Map);
-    final savedBookIds = userData['saveBooks']?.split(',') ?? [];
-    final bookSaveController = ref.read(bookSaveControllerProvider);
-
-    // Lấy thông tin chi tiết sách từ ID
-    return Future.wait(savedBookIds.map((id) async => await bookSaveController.fetchBookById(id)));
+  // Kiểm tra nếu `userId` là null (người dùng chưa đăng nhập)
+  if (userId == null) {
+    return [];
   }
-  return [];
+
+  final bookSaveController = ref.read(bookSaveControllerProvider);
+
+  return await bookSaveController.fetchSavedBooks(userId);
+});
+
+// Lấy chi tiết danh sách các sách đã lưu
+final fetchUserSavedBooksDetailsProvider = FutureProvider<List<Book>>((ref) async {
+  final savedBooksIds = await ref.watch(fetchUserSavedBooksProvider.future);
+  final bookSaveController = ref.read(bookSaveControllerProvider);
+
+  return Future.wait(savedBooksIds.map((bookId) => bookSaveController.fetchBookById(bookId)));
 });
 
 // Provider quản lý trạng thái bookmark của từng cuốn sách
 final isBookmarkedProvider = StateProvider.family<bool, String>((ref, bookId) {
   // Đợi cho đến khi dữ liệu sách đã lưu được tải xong
-  final savedBooksAsync = ref.watch(fetchSavedBooksProvider);
+  final savedBooksDetailsAsync = ref.watch(fetchUserSavedBooksProvider);
 
-  return savedBooksAsync.when(
-    data: (savedBooks) {
-      // Kiểm tra nếu sách đã lưu chứa cuốn sách hiện tại
-      return savedBooks.any((book) => book.id == bookId);
+  return savedBooksDetailsAsync.when(
+    data: (savedBooksIds) {
+      // Kiểm tra nếu bookId có trong danh sách savedBooksIds
+      return savedBooksIds.contains(bookId);
     },
     loading: () => false, // Trong khi dữ liệu đang tải, mặc định là false
     error: (error, stack) => false, // Nếu có lỗi, mặc định là false

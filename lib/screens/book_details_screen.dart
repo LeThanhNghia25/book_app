@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/book_controller.dart';
-import '../controllers/book_save_controller.dart';
+import '../controllers/book_saved_controller.dart';
 import '../state/state_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -21,9 +21,9 @@ class BookDetails extends ConsumerWidget {
         body: const Center(child: Text('Không tìm thấy thông tin sách!')),
       );
     }
-    final savedBooksAsync = ref.watch(fetchSavedBooksProvider); // Lấy danh sách sách đã lưu
-    final database = FirebaseDatabase.instance;
-    final bookController = BookController(database);
+
+    final savedBooksAsync = ref.watch(fetchUserSavedBooksProvider); // Chỉ lấy danh sách bookIds
+    final bookController = BookController(FirebaseDatabase.instance);
     if (book == null) {
       return const Scaffold(
         body: Center(child: Text('Không tìm thấy thông tin sách!')),
@@ -31,9 +31,9 @@ class BookDetails extends ConsumerWidget {
     }
 
     return savedBooksAsync.when(
-      data: (savedBooks) {
+      data: (savedBooksIds) {
         // Kiểm tra xem cuốn sách hiện tại có trong danh sách đã lưu không
-        final isBookmarked = savedBooks.contains(book.id);
+        final isBookmarked = savedBooksIds.contains(book.id);
 
         return Scaffold(
           appBar: AppBar(
@@ -84,7 +84,8 @@ class BookDetails extends ConsumerWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                               maxLines: 2, // Cố định số dòng tối đa
-                              overflow: TextOverflow.ellipsis, // Hiển thị "..." nếu quá dài
+                              overflow: TextOverflow
+                                  .ellipsis, // Hiển thị "..." nếu quá dài
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -100,17 +101,21 @@ class BookDetails extends ConsumerWidget {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    ref.read(selectedBookProvider.notifier).state = book;
+                                    ref
+                                        .read(selectedBookProvider.notifier)
+                                        .state = book;
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const ChapterScreen(),
+                                        builder: (context) =>
+                                        const ChapterScreen(),
                                       ),
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
-                                    side: const BorderSide(color: Color(0xFFF44A3E)),
+                                    side: const BorderSide(
+                                        color: Color(0xFFF44A3E)),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
@@ -122,31 +127,34 @@ class BookDetails extends ConsumerWidget {
                                 ),
                                 IconButton(
                                   onPressed: () async {
-                                    final bookSaveController = BookSaveController(FirebaseDatabase.instance);
-                                    final user = FirebaseAuth.instance.currentUser;
-
-                                    if (user == null) {
-                                      print('Error: User not logged in');
-                                      return;
-                                    }
-
-                                    final userId = user.uid;
+                                    final bookSaveController = ref.read(bookSaveControllerProvider);
+                                    final userId = ref.read(userIdProvider);
 
                                     try {
                                       if (isBookmarked) {
-                                        await bookSaveController.removeBook(book.id!, userId);
+                                        await bookSaveController.removeBook(book.id!, userId!);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Đã hủy lưu sách: ${book.name}')),
+                                        );
                                       } else {
-                                        await bookSaveController.saveBook(book, userId);
+                                        await bookSaveController.saveBook(book.id!, userId!);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Đã lưu sách: ${book.name}')),
+                                        );
                                       }
                                     } catch (e) {
-                                      print('Error updating bookmark: $e');
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Lỗi: $e')),
+                                      );
                                     }
+
+                                    // Làm mới danh sách sách đã lưu
+                                    ref.refresh(fetchUserSavedBooksProvider);
                                   },
                                   icon: Icon(
                                     isBookmarked ? Icons.bookmark : Icons.bookmark_border,
                                     color: isBookmarked ? Colors.yellow : Colors.grey,
                                   ),
-                                  iconSize: 30,
                                 ),
                               ],
                             ),
@@ -184,21 +192,23 @@ class BookDetails extends ConsumerWidget {
                   ),
                 ),
                 FutureBuilder<List<Book>>(
-                  future: bookController.fetchRandomBooks(6),  // Lấy 6 sách ngẫu nhiên
+                  future: bookController.fetchRandomBooks(6), // Gọi phương thức fetchRandomBooks từ bookController
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Lỗi: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('Không có sách nào được đề xuất.'));
+                      return const Center(
+                          child: Text('Không có sách nào được đề xuất.'));
                     } else {
                       final books = snapshot.data!;
                       return GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(8.0),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           mainAxisSpacing: 8,
                           crossAxisSpacing: 8,
@@ -209,7 +219,8 @@ class BookDetails extends ConsumerWidget {
                           final book = books[index];
                           return GestureDetector(
                             onTap: () {
-                              ref.read(selectedBookProvider.notifier).state = book;
+                              ref.read(selectedBookProvider.notifier).state =
+                                  book;
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -247,7 +258,6 @@ class BookDetails extends ConsumerWidget {
                 ),
                 // Comment section
                 CommentWidget(bookId: book.id ?? 'unknown'),
-
               ],
             ),
           ),
@@ -315,4 +325,3 @@ class _DescriptionWithToggleState extends State<DescriptionWithToggle> {
     );
   }
 }
-

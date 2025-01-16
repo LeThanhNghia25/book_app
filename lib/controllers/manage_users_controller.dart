@@ -7,36 +7,52 @@ class ManageUsersController {
   ManageUsersController(FirebaseDatabase database)
       : _userRef = database.ref('Users');
 
-  // Lấy tất cả người dùng từ Firebase
+  /// Lấy tất cả người dùng từ Firebase
   Future<List<User>> fetchAllUsers() async {
-    final snapshot = await _userRef.get();
+    try {
+      final snapshot = await _userRef.get();
 
-    if (snapshot.exists && snapshot.value is Map) {
-      final usersMap = snapshot.value as Map<dynamic, dynamic>;
+      if (snapshot.exists && snapshot.value is Map) {
+        final usersMap = Map<String, dynamic>.from(snapshot.value as Map);
 
-      // Chuyển đổi dữ liệu từ Firebase sang danh sách User
-      return usersMap.entries.map((entry) {
-        final userId = entry.key.toString();
-        final userData = entry.value as Map<dynamic, dynamic>;
-        return User.fromJson({...userData, 'id': userId});
-      }).toList();
-    } else {
+        // Chuyển đổi dữ liệu từ Firebase sang danh sách User
+        return usersMap.entries.map((entry) {
+          final userId = entry.key;
+          final userData = Map<String, dynamic>.from(entry.value);
+          return User.fromJson(userId, userData);
+        }).toList();
+      }
+      return [];
+    } catch (e) {
+      print('Lỗi khi lấy danh sách người dùng: $e');
       return [];
     }
   }
 
-  // Xóa người dùng
+  /// Xóa người dùng
   Future<void> deleteUser(String userId) async {
-    await _userRef.child(userId).remove();
+    try {
+      await _userRef.child(userId).remove();
+    } catch (e) {
+      print('Lỗi khi xóa người dùng: $e');
+    }
   }
 
-  // Cập nhật thông tin người dùng
+  /// Cập nhật thông tin người dùng
   Future<void> updateUser(String userId, Map<String, dynamic> updatedData) async {
-    await _userRef.child(userId).update(updatedData);
+    try {
+      await _userRef.child(userId).update(updatedData);
+    } catch (e) {
+      print('Lỗi khi cập nhật thông tin người dùng: $e');
+    }
   }
 
-  // Thêm người dùng mới
+  /// Thêm người dùng mới
   Future<void> addUser(User user) async {
-    await _userRef.child(user.id).set(user.toJson());
+    try {
+      await _userRef.child(user.id).set(user.toJson());
+    } catch (e) {
+      print('Lỗi khi thêm người dùng mới: $e');
+    }
   }
 }
