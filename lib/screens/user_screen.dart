@@ -254,12 +254,24 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         UserController(FirebaseDatabase.instanceFor(app: Firebase.app()));
     userController.logout(context);
   }
+
   void onSavedArticlesTap(BuildContext context) {
+    if (_user == null || _user!.id.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không tìm thấy thông tin người dùng!')),
+      );
+      return;
+    }
+
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const SavedBooksScreen()),
+      MaterialPageRoute(
+        builder: (context) => SavedBooksScreen(userId: _user!.id), // Truyền userId
+      ),
     );
   }
+
+
 
   void _showSettingsDialog(BuildContext context) {
     showDialog(

@@ -1,43 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../models/book.dart';
 import '../state/state_manager.dart';
-import 'login_screen.dart'; // Đường dẫn đến màn hình đăng nhập
 
 class SavedBooksScreen extends ConsumerWidget {
-  const SavedBooksScreen({super.key});
+  final String userId; // Nhận userId từ UserScreen
+
+  const SavedBooksScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userId = ref.watch(userIdProvider);
-
-    if (userId == null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Sách đã lưu'),
-          backgroundColor: const Color(0xFFF44A3E),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Bạn cần đăng nhập để xem sách đã lưu.'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  );
-                },
-                child: const Text('Đăng nhập'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final savedBooksDetailsAsync = ref.watch(fetchUserSavedBooksDetailsProvider);
+    final savedBooksDetailsAsync =
+    ref.watch(fetchUserSavedBooksDetailsProvider(userId)); // Lấy sách đã lưu
 
     return Scaffold(
       appBar: AppBar(
@@ -55,7 +30,14 @@ class SavedBooksScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final book = books[index];
               return ListTile(
+                leading: Image.network(
+                  book.image ?? 'https://via.placeholder.com/150',
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
                 title: Text(book.name ?? 'Tên sách không xác định'),
+                subtitle: Text(book.category ?? 'Không có danh mục'),
                 onTap: () {
                   ref.read(selectedBookProvider.notifier).state = book;
                   Navigator.pushNamed(context, '/bookDetails');
