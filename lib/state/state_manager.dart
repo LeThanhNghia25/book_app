@@ -47,17 +47,12 @@ final bookSaveControllerProvider = Provider<BookSaveController>((ref) {
 });
 
 // Provider lấy danh sách sách đã lưu
+// Lấy danh sách ID sách đã lưu
 final fetchUserSavedBooksProvider = FutureProvider<List<String>>((ref) async {
   final userId = ref.watch(userIdProvider);
-
-  // Kiểm tra nếu `userId` là null (người dùng chưa đăng nhập)
-  if (userId == null) {
-    return [];
-  }
-
+  if (userId == null) return [];
   final bookSaveController = ref.read(bookSaveControllerProvider);
-
-  return await bookSaveController.fetchSavedBooks(userId);
+  return bookSaveController.fetchSavedBooks(userId);
 });
 
 // Lấy chi tiết danh sách các sách đã lưu
