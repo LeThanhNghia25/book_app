@@ -272,7 +272,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
             children: [
               // Thêm checkbox cho Theme tối
               CheckboxListTile(
-                title: const Text('Nền đen chữ trắng'),
+                title: const Text('Giao diện tối'),
                 value: ref.watch(themeProvider) == ThemeMode.dark,  // Kiểm tra theme hiện tại
                 onChanged: (bool? value) {
                   if (value == true) {
@@ -282,7 +282,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
               ),
               // Thêm checkbox cho Theme sáng
               CheckboxListTile(
-                title: const Text('Nền trắng chữ đen'),
+                title: const Text('Giao diện sáng'),
                 value: ref.watch(themeProvider) == ThemeMode.light,  // Kiểm tra theme hiện tại
                 onChanged: (bool? value) {
                   if (value == true) {
