@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/user_controller.dart';
 import '../models/user.dart';
+import '../notifiers/theme_notifier.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
   final User? user; // Nhận thông tin người dùng từ BaseScreen
@@ -126,8 +127,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeProvider);  // Lấy themeMode từ Riverpod
     return Scaffold(
-      backgroundColor: const Color(0xffffffff),
+      backgroundColor:  themeMode == ThemeMode.dark ? Colors.black : Colors.white,  // Thay đổi nền theo theme
       body: FutureBuilder<void>(
         future: _userFuture,
         builder: (context, snapshot) {
@@ -195,7 +197,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         colorTile(Icons.person_outline, Colors.deepPurple,
             "Chỉnh sửa thông tin",
             onTap: () => _showEditUserDialog(context, user)),
-        colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt"),
+        colorTile(Icons.settings_outlined, Colors.blue, "Cài đặt", onTap: () => _showSettingsDialog(context)),
         colorTile(Icons.bookmark_border, Colors.pink, "Sách yêu thích", onTap: () => onSavedArticlesTap(context)),
         colorTile(Icons.favorite_border, Colors.orange, "Referral code"),
       ],
@@ -258,5 +260,44 @@ class _UserScreenState extends ConsumerState<UserScreen> {
       MaterialPageRoute(builder: (context) => const SavedBooksScreen()),
     );
   }
+
+  void _showSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Cài đặt'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Thêm checkbox cho Theme tối
+              CheckboxListTile(
+                title: const Text('Nền đen chữ trắng'),
+                value: ref.watch(themeProvider) == ThemeMode.dark,  // Kiểm tra theme hiện tại
+                onChanged: (bool? value) {
+                  if (value == true) {
+                    ref.read(themeProvider.notifier).setThemeMode(ThemeMode.dark);
+                  }
+                },
+              ),
+              // Thêm checkbox cho Theme sáng
+              CheckboxListTile(
+                title: const Text('Nền trắng chữ đen'),
+                value: ref.watch(themeProvider) == ThemeMode.light,  // Kiểm tra theme hiện tại
+                onChanged: (bool? value) {
+                  if (value == true) {
+                    ref.read(themeProvider.notifier).setThemeMode(ThemeMode.light);
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
+
 
 }

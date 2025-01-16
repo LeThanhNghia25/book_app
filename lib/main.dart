@@ -7,7 +7,7 @@ import 'package:book_app/screens/saved_books_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'notifiers/theme_notifier.dart';
 import 'base_screen.dart';
 
 void main() async {
@@ -27,15 +27,18 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider); // Lấy trạng thái theme từ themeProvider
     return MaterialApp(
       title: 'Book App',
+      themeMode: themeMode,
+      darkTheme: ThemeData.dark(), // Theme tối
+      theme: ThemeData.light(), // Theme sáng
       home: const LoginScreen(),  // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
-      // home: const BaseScreen(selectedIndex: 0),
       routes: {
         '/bookDetails': (context) =>  const BookDetails(),
         '/chapters': (context) => const ChapterScreen(),
