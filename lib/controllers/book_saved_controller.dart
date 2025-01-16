@@ -19,7 +19,7 @@ class BookSaveController {
 
     if (!savedBooks.contains(bookId)) {
       savedBooks.add(bookId);
-      await dbRef.set(savedBooks);
+      await dbRef.set(savedBooks); // Lưu danh sách mới
     }
   }
 
@@ -31,7 +31,7 @@ class BookSaveController {
     if (snapshot.exists) {
       List<String> savedBooks = List<String>.from(snapshot.value as List);
       savedBooks.remove(bookId);
-      await dbRef.set(savedBooks);
+      await dbRef.set(savedBooks); // Cập nhật danh sách sau khi xóa
     }
   }
 

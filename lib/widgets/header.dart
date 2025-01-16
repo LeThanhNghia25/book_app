@@ -2,7 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:book_app/state/state_manager.dart';
-import 'package:book_app/controllers/qr_sanner_controller.dart';
+import 'package:book_app/widgets/qr_sanner_widget.dart';
 import 'package:book_app/screens/chapter_screen.dart';
 import '../models/book.dart';
 import 'package:diacritic/diacritic.dart';

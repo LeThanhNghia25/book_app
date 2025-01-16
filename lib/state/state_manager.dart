@@ -47,26 +47,51 @@ final bookSaveControllerProvider = Provider<BookSaveController>((ref) {
 });
 
 // Provider lấy danh sách sách đã lưu
+// Lấy danh sách ID sách đã lưu
 final fetchUserSavedBooksProvider = FutureProvider<List<String>>((ref) async {
   final userId = ref.watch(userIdProvider);
-
-  // Kiểm tra nếu `userId` là null (người dùng chưa đăng nhập)
-  if (userId == null) {
-    return [];
-  }
-
+  if (userId == null) return [];
   final bookSaveController = ref.read(bookSaveControllerProvider);
-
-  return await bookSaveController.fetchSavedBooks(userId);
+  return bookSaveController.fetchSavedBooks(userId);
 });
 
 // Lấy chi tiết danh sách các sách đã lưu
-final fetchUserSavedBooksDetailsProvider = FutureProvider<List<Book>>((ref) async {
-  final savedBooksIds = await ref.watch(fetchUserSavedBooksProvider.future);
-  final bookSaveController = ref.read(bookSaveControllerProvider);
+final fetchUserSavedBooksDetailsProvider =
+FutureProvider.family<List<Book>, String>((ref, userId) async {
+  final database = FirebaseDatabase.instance;
 
-  return Future.wait(savedBooksIds.map((bookId) => bookSaveController.fetchBookById(bookId)));
+  // Lấy danh sách bookId từ saved_books
+  final savedBooksRef = database.ref('saved_books/$userId');
+  final snapshot = await savedBooksRef.get();
+
+  if (!snapshot.exists || snapshot.value == null) {
+    return []; // Trả về danh sách rỗng nếu không có sách đã lưu
+  }
+
+  final bookIds = List<String>.from(snapshot.value as List);
+
+  // Lấy thông tin chi tiết từng sách từ bảng Books
+  final books = await Future.wait(
+    bookIds.map((bookId) async {
+      final bookSnapshot = await database.ref('Books/$bookId').get();
+      if (bookSnapshot.exists) {
+        return Book.fromJson(
+          Map<String, dynamic>.from(bookSnapshot.value as Map),
+          bookId,
+        );
+      } else {
+        return Book(
+          id: bookId,
+          name: 'Sách không tìm thấy',
+          image: 'https://via.placeholder.com/150',
+        );
+      }
+    }),
+  );
+
+  return books;
 });
+
 
 // Provider quản lý trạng thái bookmark của từng cuốn sách
 final isBookmarkedProvider = StateProvider.family<bool, String>((ref, bookId) {

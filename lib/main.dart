@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'notifiers/theme_notifier.dart';
-import 'base_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,13 +37,22 @@ class MyApp extends ConsumerWidget {
       themeMode: themeMode,
       darkTheme: ThemeData.dark(), // Theme tối
       theme: ThemeData.light(), // Theme sáng
-      home: const LoginScreen(),  // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
+      home: const LoginScreen(), // Đặt LoginScreen làm màn hình mặc định khi mở ứng dụng
       routes: {
-        '/bookDetails': (context) =>  const BookDetails(),
+        '/bookDetails': (context) => const BookDetails(),
         '/chapters': (context) => const ChapterScreen(),
         '/admin': (context) => const AdminScreen(),
-        '/savedArticles': (context) => const SavedBooksScreen(),
-        '/login':(context) => const LoginScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/savedArticles') {
+          final args = settings.arguments as String?;
+          if (args != null) {
+            return MaterialPageRoute(
+              builder: (context) => SavedBooksScreen(userId: args),
+            );
+          }
+        }
+        return null;
       },
       onUnknownRoute: (settings) => MaterialPageRoute(
         builder: (context) => const Scaffold(

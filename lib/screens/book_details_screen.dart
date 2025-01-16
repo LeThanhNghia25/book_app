@@ -10,6 +10,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../widgets/comment_widget.dart';
 
+import 'package:book_app/models/book.dart';
+import 'package:book_app/screens/chapter_screen.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../controllers/book_controller.dart';
+import '../controllers/book_saved_controller.dart';
+import '../state/state_manager.dart';
+import '../widgets/comment_widget.dart';
+
 class BookDetails extends ConsumerWidget {
   const BookDetails({super.key});
 
@@ -17,22 +27,16 @@ class BookDetails extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final book = ref.watch(selectedBookProvider);
     if (book == null) {
-      return Scaffold(
-        body: const Center(child: Text('Không tìm thấy thông tin sách!')),
-      );
-    }
-
-    final savedBooksAsync = ref.watch(fetchUserSavedBooksProvider); // Chỉ lấy danh sách bookIds
-    final bookController = BookController(FirebaseDatabase.instance);
-    if (book == null) {
       return const Scaffold(
         body: Center(child: Text('Không tìm thấy thông tin sách!')),
       );
     }
 
+    final savedBooksAsync = ref.watch(fetchUserSavedBooksProvider);
+    final bookController = BookController(FirebaseDatabase.instance);
+
     return savedBooksAsync.when(
       data: (savedBooksIds) {
-        // Kiểm tra xem cuốn sách hiện tại có trong danh sách đã lưu không
         final isBookmarked = savedBooksIds.contains(book.id);
 
         return Scaffold(
@@ -51,13 +55,11 @@ class BookDetails extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Hiển thị thông tin sách
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Ảnh bìa sách với kích thước cố định
                       Container(
                         height: 260,
                         width: 180,
@@ -65,14 +67,13 @@ class BookDetails extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(8.0),
                           image: DecorationImage(
                             image: NetworkImage(
-                              book.image ?? 'https://i.imgur.com/QsFAQsob.jpg',
+                              book.image ?? 'https://via.placeholder.com/100',
                             ),
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
                       const SizedBox(width: 16),
-                      // Phần thông tin sách
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,9 +84,8 @@ class BookDetails extends ConsumerWidget {
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
-                              maxLines: 2, // Cố định số dòng tối đa
-                              overflow: TextOverflow
-                                  .ellipsis, // Hiển thị "..." nếu quá dài
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -95,7 +95,6 @@ class BookDetails extends ConsumerWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 16),
-                            // Nút hành động
                             Wrap(
                               spacing: 10,
                               children: [
@@ -130,14 +129,28 @@ class BookDetails extends ConsumerWidget {
                                     final bookSaveController = ref.read(bookSaveControllerProvider);
                                     final userId = ref.read(userIdProvider);
 
+                                    if (userId == null) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Bạn cần đăng nhập để lưu sách.')),
+                                      );
+                                      return;
+                                    }
+
+                                    if (book.id == null) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Không tìm thấy ID của sách.')),
+                                      );
+                                      return;
+                                    }
+
                                     try {
                                       if (isBookmarked) {
-                                        await bookSaveController.removeBook(book.id!, userId!);
+                                        await bookSaveController.removeBook(book.id!, userId);
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(content: Text('Đã hủy lưu sách: ${book.name}')),
                                         );
                                       } else {
-                                        await bookSaveController.saveBook(book.id!, userId!);
+                                        await bookSaveController.saveBook(book.id!, userId);
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(content: Text('Đã lưu sách: ${book.name}')),
                                         );
@@ -148,7 +161,6 @@ class BookDetails extends ConsumerWidget {
                                       );
                                     }
 
-                                    // Làm mới danh sách sách đã lưu
                                     ref.refresh(fetchUserSavedBooksProvider);
                                   },
                                   icon: Icon(
@@ -165,7 +177,6 @@ class BookDetails extends ConsumerWidget {
                   ),
                 ),
                 const Divider(),
-                // Phần giới thiệu
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -177,13 +188,11 @@ class BookDetails extends ConsumerWidget {
                             fontSize: 25, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      // Phần description có thể thu gọn
                       DescriptionWithToggle(description: book.description),
                     ],
                   ),
                 ),
                 const Divider(),
-                // Có thể bạn quan tâm
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: const Text(
@@ -192,7 +201,7 @@ class BookDetails extends ConsumerWidget {
                   ),
                 ),
                 FutureBuilder<List<Book>>(
-                  future: bookController.fetchRandomBooks(6), // Gọi phương thức fetchRandomBooks từ bookController
+                  future: bookController.fetchRandomBooks(6),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -234,7 +243,8 @@ class BookDetails extends ConsumerWidget {
                                 children: [
                                   Expanded(
                                     child: Image.network(
-                                      book.image ?? 'https://i.imgur.com/QsFAQsob.jpg',
+                                      book.image ??
+                                          'https://via.placeholder.com/150',
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -256,7 +266,6 @@ class BookDetails extends ConsumerWidget {
                     }
                   },
                 ),
-                // Comment section
                 CommentWidget(bookId: book.id ?? 'unknown'),
               ],
             ),
@@ -264,9 +273,8 @@ class BookDetails extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      // Khi dữ liệu đang tải
       error: (error, stack) =>
-          Center(child: Text('Lỗi: $error')), // Nếu có lỗi khi lấy dữ liệu
+          Center(child: Text('Lỗi: $error')),
     );
   }
 }

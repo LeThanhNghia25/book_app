@@ -14,7 +14,7 @@ class QRScannerPage extends ConsumerStatefulWidget {
 class _QRScannerPageState extends ConsumerState<QRScannerPage> {
   String qrResult = "";  // Biến chứa kết quả quét
   bool isScanned = false; // Biến kiểm tra đã quét chưa
-  DatabaseReference _bookRef = FirebaseDatabase.instance.ref().child('Book');
+  DatabaseReference _bookRef = FirebaseDatabase.instance.ref().child('Books');
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class _QRScannerPageState extends ConsumerState<QRScannerPage> {
       final bookData = Map<String, dynamic>.from(snapshot.value as Map);
       // Truyền bookId vào hàm fromJson
       ref.read(selectedBookProvider.notifier).state = Book.fromJson(bookData, bookId);
-      Navigator.pushNamed(context, '/chapters');
+      Navigator.pushNamed(context, '/bookDetails');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Book not found!")),
