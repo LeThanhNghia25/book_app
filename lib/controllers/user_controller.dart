@@ -11,12 +11,12 @@ class UserController {
   UserController(FirebaseDatabase database)
       : _userRef = database.ref().child('Users');
 
-  // Lấy thông tin người dùng hiện tại từ Firebase Authentication
+  /// Lấy thông tin người dùng hiện tại từ Firebase Authentication
   firebase_auth.User? getCurrentUser() {
     return firebase_auth.FirebaseAuth.instance.currentUser;
   }
 
-  // Lấy thông tin user từ Firebase Realtime Database dựa trên người dùng hiện tại
+  /// Lấy thông tin user từ Firebase Realtime Database dựa trên người dùng hiện tại
   Future<User?> fetchCurrentUserData() async {
     final currentUser = getCurrentUser();
     if (currentUser == null) {
@@ -27,52 +27,46 @@ class UserController {
     print("Fetching data for UID: ${currentUser.uid}"); // Debug print
     final snapshot = await _userRef.child(currentUser.uid).get();
     if (snapshot.exists) {
-      var userData = Map<String, dynamic>.from(snapshot.value as Map);
-      userData['id'] = currentUser.uid;
-      print("Fetched user data: $userData"); // Debug print
-      return User.fromJson(userData);
+      final userData = Map<String, dynamic>.from(snapshot.value as Map);
+      return User.fromJson(currentUser.uid, userData);
     }
 
     print("No data found for UID: ${currentUser.uid}"); // Debug print
     return null;
   }
 
-  /// Lấy thông tin chi tiết 1 user theo id
+  /// Lấy thông tin chi tiết 1 user theo `id`
   Future<User?> fetchUserById(String userId) async {
     final snapshot = await _userRef.child(userId).get();
     if (snapshot.exists) {
-      var userData = Map<String, dynamic>.from(snapshot.value as Map);
-      userData['id'] = userId;
-      return User.fromJson(userData);
-    }
-    return null;
-  }
-  // Lấy tên người dùng từ Firebase Realtime Database theo userId
-  Future<User?> fetchUserNameById(String userId, String name) async {
-    final snapshot = await _userRef.child(userId).get();
-    if (snapshot.exists) {
-      var userData = Map<String, dynamic>.from(snapshot.value as Map);
-      userData['id'] = userId;
-      userData['name'] = name;
-      return User.fromJson(userData);
+      final userData = Map<String, dynamic>.from(snapshot.value as Map);
+      return User.fromJson(userId, userData);
     }
     return null;
   }
 
-  // Lấy thông tin chi tiết 1 user theo email
+  /// Lấy thông tin chi tiết 1 user theo `email`
   Future<User?> fetchUserByEmail(String email) async {
     final snapshot = await _userRef.orderByChild('email').equalTo(email).limitToFirst(1).get();
     if (snapshot.exists) {
-      final usersMap = snapshot.value as Map<dynamic, dynamic>;
+      final usersMap = Map<String, dynamic>.from(snapshot.value as Map);
       final userKey = usersMap.keys.first;
       final userData = Map<String, dynamic>.from(usersMap[userKey]);
-      userData['id'] = userKey;
-      return User.fromJson(userData);
+      return User.fromJson(userKey, userData);
     }
     return null;
   }
 
-  // Hàm đăng xuất
+  /// Lấy tên người dùng theo `userId`
+  Future<String?> fetchUserNameById(String userId) async {
+    final snapshot = await _userRef.child(userId).child('name').get();
+    if (snapshot.exists) {
+      return snapshot.value as String?;
+    }
+    return null;
+  }
+
+  /// Hàm đăng xuất
   Future<void> logout(BuildContext context) async {
     await firebase_auth.FirebaseAuth.instance.signOut(); // Đăng xuất khỏi Firebase Authentication
     Navigator.pushReplacement(
@@ -81,7 +75,7 @@ class UserController {
     );
   }
 
-  // Cập nhật thông tin người dùng
+  /// Cập nhật thông tin người dùng
   Future<User?> updateUser(String userId, Map<String, dynamic> updatedData) async {
     try {
       // Cập nhật thông tin người dùng trong Firebase
@@ -99,5 +93,4 @@ class UserController {
       throw Exception("Failed to update user data: $e");
     }
   }
-
 }

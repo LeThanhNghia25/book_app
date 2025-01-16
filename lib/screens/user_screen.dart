@@ -1,4 +1,4 @@
-import 'package:book_app/screens/saved_articles_screen.dart';
+import 'package:book_app/screens/saved_books_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -257,7 +257,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
   void onSavedArticlesTap(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const SavedArticlesScreen()),
+      MaterialPageRoute(builder: (context) => const SavedBooksScreen()),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:book_app/models/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/state_manager.dart';
+import 'book_details_screen.dart';
 
 class AllBooksScreen extends ConsumerWidget {
   const AllBooksScreen({super.key});
@@ -49,8 +50,16 @@ class AllBooksScreen extends ConsumerWidget {
                 final book = books[index];
                 return GestureDetector(
                   onTap: () {
+                    // Cập nhật selected book vào provider
                     ref.read(selectedBookProvider.notifier).state = book;
-                    Navigator.pushNamed(context, "/chapters");
+
+                    // Chuyển sang màn hình chi tiết với MaterialPageRoute
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BookDetails(),
+                      ),
+                    );
                   },
                   child: Card(
                     elevation: 8,
