@@ -7,6 +7,8 @@ import 'package:book_app/screens/chapter_screen.dart';
 import '../models/book.dart';
 import 'package:diacritic/diacritic.dart';
 
+import '../screens/book_details_screen.dart';
+
 class HeaderWithSearch extends ConsumerWidget implements PreferredSizeWidget {
   const HeaderWithSearch({super.key});
 
@@ -145,10 +147,11 @@ class CustomSearch extends SearchDelegate {
                     Book bookDetails = await fetchBookDetailsFromFirebase(bookName);
                     ref.read(selectedBookProvider.notifier).state = bookDetails;
 
+                    // Chuyển sang màn hình chi tiết với MaterialPageRoute
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ChapterScreen(),
+                        builder: (context) => const BookDetails(),
                       ),
                     );
                   } catch (e) {
